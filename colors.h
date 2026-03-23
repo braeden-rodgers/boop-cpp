@@ -40,24 +40,24 @@ const string BG_CYAN    = "\e[46m";
 const string BG_WHITE   = "\e[47m";
 
 // High Intensity Colors
-const string HI_BLACK   = "\e[90m";
-const string HI_RED     = "\e[91m";
-const string HI_GREEN   = "\e[92m";
-const string HI_YELLOW  = "\e[93m";
-const string HI_BLUE    = "\e[94m";
-const string HI_PURPLE  = "\e[95m";
-const string HI_CYAN    = "\e[96m";
-const string HI_WHITE   = "\e[97m";
+const string H_BLACK    = "\e[90m";
+const string H_RED      = "\e[91m";
+const string H_GREEN    = "\e[92m";
+const string H_YELLOW   = "\e[93m";
+const string H_BLUE     = "\e[94m";
+const string H_PURPLE   = "\e[95m";
+const string H_CYAN     = "\e[96m";
+const string H_WHITE    = "\e[97m";
 
 // High Intensity Background Colors
-const string BG_BLACK   = "\e[100m";
-const string BG_RED     = "\e[101m";
-const string BG_GREEN   = "\e[102m";
-const string BG_YELLOW  = "\e[103m";
-const string BG_BLUE    = "\e[104m";
-const string BG_PURPLE  = "\e[105m";
-const string BG_CYAN    = "\e[106m";
-const string BG_WHITE   = "\e[107m";
+const string HBG_BLACK  = "\e[100m";
+const string HBG_RED    = "\e[101m";
+const string HBG_GREEN  = "\e[102m";
+const string HBG_YELLOW = "\e[103m";
+const string HBG_BLUE   = "\e[104m";
+const string HBG_PURPLE = "\e[105m";
+const string HBG_CYAN   = "\e[106m";
+const string HBG_WHITE  = "\e[107m";
 
 // Shortcuts 
 const string ERROR      = "\e[1;41;37m\a";  // Bold white text with red background
