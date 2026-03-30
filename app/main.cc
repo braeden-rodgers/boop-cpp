@@ -1,3 +1,10 @@
+/**
+ * main.cc
+ * 
+ * The main file of the entire project.
+ * 
+ */
+
 #include "boop.h"
 
 using namespace std;
