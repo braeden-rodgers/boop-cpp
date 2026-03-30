@@ -49,7 +49,7 @@ class Space{
         std::string location;   // The named location of the space
 };
 
-// Boop class is a derived class of Game class
+// A derived class of Game class representing an entire round of the "boop." game
 class Boop: public main_savitch_14::Game {
     public:
         static const int SIZE = 6;

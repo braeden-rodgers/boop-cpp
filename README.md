@@ -8,15 +8,31 @@ A remake of the 2022 C++ implementation based on a deceptively cute but deceivin
 (WIP)
 ### Rules:
 (WIP)
+### Mechanics:
+* "Booping" behavior
+* Piece upgrades (kittens → cats)
+* Board interactions
 
 ## Features
 (WIP)
 
 ## Project Structure
-(WIP)
-
-### Key Components:
-(WIP)
+/boop
+.gitignore
+Makefile
+README.MD
+//include
+    colors.h
+    game.h
+    boop.h
+//src
+    game.cc
+    boop.cc
+//app
+   main.cc
+//docs
+    Boop_Rules.pdf
+//tests
 
 ## Technologies Used
 (WIP)
