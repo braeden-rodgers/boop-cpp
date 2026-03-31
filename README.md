@@ -46,12 +46,16 @@ boop/
 ```
 git clone git@github.com:braeden-rodgers/boop.git
 cd boop
-mkdir build && cd build
-cmake ..
 make
 ```
 ### Running the Game:
-`./build/boop`
+```
+make run
+```
+or 
+```
+./build/boop
+```
 
 ## Usage
 * Launch the executable 
