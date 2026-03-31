@@ -5,7 +5,6 @@
  * 
  */
 
-#include <iomanip>
 #include <iostream>
 #include <queue>
 #include <string>
@@ -22,39 +21,74 @@ using namespace main_savitch_14;
 Cell::Cell() {
     state = 0; 
     location = "N/A";
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < CELL_WIDTH; i++)
         piece[i] = ' ';
-    }
 }
 
 int Cell::get_state() const {return state;}
 
 string Cell::get_location() const {return location;}
 
-void Cell::set_state(int s) {state = s;}
-
-void Cell::set_location(string l) {location = l;}
-        
-void Cell::display_piece(ostream &outs) const {
-    // This specific function may need some major tweaks in the future
-    // Kitten piece to copy and paste: ₍˄·͈༝·͈˄*₎◞ ̑̑ 
-    // Cat piece to copy and paste: ≽(•⩊ •マ≼
+void Cell::get_piece(int i) const {
     switch (state) {
         case 0:
             // Print empty space
+            cout << piece[i];
             break;
         case 1:
             // Print player 1's kitten piece
+            cout << YELLOW << piece[i] << RESET;
             break;
         case 2:
             // Print player 1's cat piece
+            cout << H_YELLOW << piece[i] << RESET;
             break;
         case 3:
             // Print player 2's kitten piece
+            cout << BLUE << piece[i] << RESET;
             break;
         case 4:
             // Print player 2's cat piece
+            cout << H_BLUE << piece[i] << RESET;
             break;
+    }
+}
+
+void Cell::set_state(int s) {state = s;}
+
+void Cell::set_location(string l) {location = l;}
+
+void Cell::set_piece(int state) {
+    // Note that this specific method may need some tweaks in the future
+    if (state == 1 || state == 3) {
+        // The cell's piece is set to a kitten piece
+        piece[0] = ' ';
+        piece[1] = '(';
+        piece[2] = '^';
+        piece[3] = 'o';
+        piece[4] = '.';
+        piece[5] = 'o';
+        piece[6] = '^';
+        piece[7] = '*';
+        piece[8] = ')';
+        piece[9] = '/';
+        piece[10] = 'm';
+        piece[11] = ' ';
+    }
+    else if (state == 2 || state == 4) {
+        // The cell's piece is set to a cat piece
+        piece[0] = ' ';
+        piece[1] = '(';
+        piece[2] = '=';
+        piece[3] = '0';
+        piece[4] = 'w';
+        piece[5] = '0';
+        piece[6] = '=';
+        piece[7] = ')';
+        piece[8] = '=';
+        piece[9] = '=';
+        piece[10] = '>';
+        piece[11] = ' ';
     }
 }
 
@@ -97,7 +131,29 @@ int Boop::get_p2_kpieces() const {return p2_kpieces;}
 int Boop::get_p2_cpieces() const {return p2_cpieces;}
 
 void Boop::make_move(const std::string& move) {
-    // Implement code here
+    // This implementation is simplified for now; Will be tweaked in the future
+    Cell cell;
+
+    for(int i = 0; i < SIZE; i++) {
+        for(int j = 0; j < SIZE; j++) {
+            cell = board[i][j];
+
+            if (move == cell.get_location()){
+                if (next_mover() == HUMAN){
+                    cell.set_state(1);
+                    board[i][j] = cell;
+                    p1_kpieces--;
+                }
+                else {
+                    cell.set_state(1);
+                    board[i][j] = cell;
+                    p2_kpieces--;
+                }
+
+                board[i][j].set_piece((board[i][j]).get_state());
+            }
+        }
+    }
 
     Game::make_move(move);
 }
@@ -120,34 +176,37 @@ void Boop::compute_moves(queue<string>& moves) const{
 void Boop::display_status() const{
     // Print the column labels
     cout << "    ";
-    for (int col = 0; col < SIZE; col++) {
-        for (int i = 0; i < CELL_WIDTH; i++) cout << " ";
-        cout << char('A' + col);
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < CELL_WIDTH; j++) 
+            cout << " ";
+        cout << char('A' + i);
     }
     cout << endl;
 
-    for (int row = 0; row < SIZE; row++) {
+    for (int r = 0; r < SIZE; r++) {
         // Print the top border
         cout << "   +";
-        for (int col = 0; col < SIZE; col++) {
-            for (int i = 0; i < CELL_WIDTH; i++) cout << "-";
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < CELL_WIDTH; j++)
+                cout << "-";
             cout << "+";
         }
         cout << endl;
 
         // Print the cell height
-        for (int height = 0; height < CELL_HEIGHT; height++) {
-            if (height == CELL_HEIGHT / 2)
-                cout << " " << row + 1 << " |";
+        for (int h = 0; h < CELL_HEIGHT; h++) {
+            if (h == CELL_HEIGHT / 2)
+                // Print the row labels
+                cout << " " << r + 1 << " |";
             else
                 cout << "   |";
 
             // Print the cell width
-            for (int col = 0; col < SIZE; col++) {
+            for (int c = 0; c < SIZE; c++) {
                 for (int width = 0; width < CELL_WIDTH; width++) {
-                    // Print the center piece (This may need some tweaks in the future)
-                    if (height == CELL_HEIGHT / 2 && width == CELL_WIDTH / 2)
-                        cout << "X";
+                    // Print the center piece
+                    if (h == CELL_HEIGHT / 2) 
+                        board[c][r].get_piece(width);
                     else
                         cout << " ";
                 }
@@ -159,18 +218,18 @@ void Boop::display_status() const{
 
     // Print the bottom border
     cout << "   +";
-    for (int col = 0; col < SIZE; col++) {
-        for (int i = 0; i < CELL_WIDTH; i++) cout << "-";
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < CELL_WIDTH; j++) cout << "-";
         cout << "+";
     }
     cout << endl;
 
     // Display the current status
-    cout << "\t\t\t\t    " << BOLD << "Moves completed: " << RESET << moves_completed() << endl; 
-    cout << BOLD << YELLOW << "\t\tPlayer 1's status:" << "\t\t\t" << BLUE << "Player 2's status:" << RESET << endl;
-    cout << "----------------------------------\t\t\t----------------------------------" << endl;
-    cout << YELLOW << "\t\t  Kitten pieces: " << RESET << p1_kpieces << BLUE << "\t\t\tKitten Pieces: " << RESET << p1_cpieces << endl;
-    cout << YELLOW << "\t\t     Cat pieces: " << RESET << p2_kpieces << BLUE << "\t\t\tCat Pieces:    " << RESET << p2_cpieces << endl;
+    cout << "\t\t\t\t" << BOLD << "Moves completed: " << RESET << moves_completed() << endl; 
+    cout << BOLD << YELLOW << "\tPlayer 1's status:" << "\t\t\t\t" << BLUE << "Player 2's status:" << RESET << endl;
+    cout << "--------------------------\t\t\t\t--------------------------" << endl;
+    cout << YELLOW << "\t  Kitten pieces: " << RESET << p1_kpieces << BLUE << "\t\t\t\tKitten Pieces: " << RESET << p1_cpieces << endl;
+    cout << YELLOW << "\t     Cat pieces: " << RESET << p2_kpieces << BLUE << "\t\t\t\tCat Pieces:    " << RESET << p2_cpieces << endl;
     cout << endl;
 }
 
@@ -189,14 +248,12 @@ bool Boop::is_legal(const std::string& move) const {
     if (move.length() != 2) 
         return false;
 
-    // Handle case sensitivity by automatically turning the row letter into an uppercase letter
-	char row_letter = (char)toupper(move.at(0));
-    char col_num = move.at(1);
-    string new_move = string(1, row_letter) + col_num;
+    char column = move.at(0);
+    char row = move.at(1);
 
-    // Verify the row letter and then the column number
-    if (row_letter >= 'A' && row_letter <= 'F') {
-        if (col_num >= '1' && col_num <= '6') {
+    // Verify the column letter and the row number
+    if (column >= 'A' && column <= 'F') {
+        if (row >= '1' && row <= '6') {
             Cell cell;
 
             // Verify that the selected cell is empty
@@ -204,12 +261,12 @@ bool Boop::is_legal(const std::string& move) const {
                 for (int j = 0; j < SIZE; j++) {
                     cell = board[i][j];
 
-                    if (new_move == cell.get_location()){
-                        if(cell.get_state() == 0) {
+                    if (move == cell.get_location()){
+                        if (cell.get_state() == 0)
                             return true;
-                        }
                         else
-                            return false;   // Selected cell is already occupied
+                            // Selected cell is already occupied
+                            return false;
                     }
                 }
             }
@@ -218,8 +275,3 @@ bool Boop::is_legal(const std::string& move) const {
     
     return false;
 }
-
-// ostream& operator << (ostream &outs, const Cell& cell){
-//     cell.display_piece(outs);
-//     return outs;
-// }
