@@ -12,11 +12,14 @@
 #ifndef BOOP_H
 #define BOOP_H
 
-#include <iomanip>
 #include <iostream>
 #include <queue>
 #include <string>
 #include "game.h"
+
+static const int SIZE = 6;
+static const int CELL_HEIGHT = 6;
+static const int CELL_WIDTH = CELL_HEIGHT * 2;
 
 // An independent class representing a single cell within the "boop." game board
 class Cell{
@@ -29,15 +32,18 @@ class Cell{
 
         // Getter method to get the named location of the cell
         std::string get_location() const;
+        
+        // Getter method to display either one of the players' kitten or cat piece depending on the cell's state
+        void get_piece(int i) const;
 
         // Setter method to change the state of the cell
         void set_state(int state);
 
         // Setter method to change the name of the location
         void set_location(std::string name);
-        
-        // Printing method to display either one of the players' kitten or cat piece depending on the current state of the space
-        void display_piece(std::ostream &outs) const;
+
+        // Setter method to change the cell's piece
+        void set_piece(int state);
     
     private:
         int state;              // Mutable state of the cell; There are 5 possible states a cell can have:
@@ -53,10 +59,6 @@ class Cell{
 // A derived class of Game class representing an entire round of the "boop." game
 class Boop: public main_savitch_14::Game {
     public:
-        const static int SIZE = 6;
-        const static int CELL_HEIGHT = SIZE;
-        const static int CELL_WIDTH = SIZE * 2;
-
         // Boop constructor
         Boop();
 
@@ -113,8 +115,5 @@ class Boop: public main_savitch_14::Game {
         int p2_kpieces;         // Player 2's kitten pieces
         int p2_cpieces;         // Player 2's cat pieces
 };
-
-// Overloaded << operator
-// std::ostream& operator << (std::ostream& outs, const Cell& cell);
 
 #endif  // BOOP_H

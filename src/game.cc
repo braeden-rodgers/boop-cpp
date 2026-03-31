@@ -11,6 +11,7 @@
 #include <queue>      // Provides queue<string>
 #include <string>     // Provides string
 #include "game.h"     // Provides definition of game class
+#include <colors.h>
 
 using namespace std;
 
@@ -41,6 +42,9 @@ namespace main_savitch_14 {
 
 		display_message("Your move, please: ");
 		getline(cin, move);
+
+		if (!move.empty())
+    		move[0] = (char)toupper(move[0]);
 
 		return move;
     }
@@ -137,7 +141,9 @@ namespace main_savitch_14 {
 		move = get_user_move();
 		
 		while (!is_legal(move)) {
+			cout << RED;
 			display_message("Illegal move.\n");
+			cout << RESET;
 			move = get_user_move();
         }
 		
