@@ -17,25 +17,25 @@ A remake of the 2022 C++ implementation based on a deceptively cute but deceivin
 (WIP)
 
 ## Project Structure
-/boop
-.gitignore
-Makefile
-README.MD
-//include
-    colors.h
-    game.h
-    boop.h
-//src
-    game.cc
-    boop.cc
-//app
-   main.cc
-//docs
-    Boop_Rules.pdf
-//tests
+```
+boop/
+├── app/
+│   └── main.cc
+├── docs/
+│   └── Boop_Rules.pdf
+├── include/
+│   ├── boop.h
+│   ├── colors.h
+│   └── game.h
+├── src/
+│   ├── boop.cc
+│   ├── game.cc
+├── Makefile
+└── README.md
+```
 
-## Technologies Used
-(WIP)
+<!-- ## Technologies Used
+(WIP) -->
 
 ## Installation & Setup 
 ### Prerequisites:
@@ -46,12 +46,16 @@ README.MD
 ```
 git clone git@github.com:braeden-rodgers/boop.git
 cd boop
-mkdir build && cd build
-cmake ..
 make
 ```
 ### Running the Game:
-`./boop`
+```
+make run
+```
+or 
+```
+./build/boop
+```
 
 ## Usage
 * Launch the executable 
@@ -83,8 +87,8 @@ make
 ## Known Issues/TODO
 (WIP)
 
-## License
-(WIP)
+<!-- ## License
+(WIP) -->
 
 ## Acknowledgements
 * Original *boop.* game designers for the game concept

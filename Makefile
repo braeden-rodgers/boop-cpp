@@ -17,6 +17,10 @@ TARGET = $(BUILD_DIR)/boop
 # Default rule
 all: $(TARGET)
 
+# Run rule
+run: all 
+	./$(TARGET)
+
 # Link object files into final executable
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
@@ -33,6 +37,3 @@ $(BUILD_DIR)/main.o: $(APP_DIR)/main.cc
 # Clean rule
 clean:
 	rm -rf $(BUILD_DIR)
-
-run: all 
-	./$(TARGET)
