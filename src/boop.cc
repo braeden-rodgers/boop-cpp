@@ -62,31 +62,31 @@ void Cell::set_piece(int state) {
     // Note that this specific method may need some tweaks in the future
     if (state == 1 || state == 3) {
         // The cell's piece is set to a kitten piece
-        piece[0] = ' ';
-        piece[1] = '(';
-        piece[2] = '^';
-        piece[3] = 'o';
-        piece[4] = '.';
-        piece[5] = 'o';
-        piece[6] = '^';
-        piece[7] = '*';
-        piece[8] = ')';
-        piece[9] = '/';
+        piece[0]  = ' ';
+        piece[1]  = '(';
+        piece[2]  = '^';
+        piece[3]  = 'o';
+        piece[4]  = '.';
+        piece[5]  = 'o';
+        piece[6]  = '^';
+        piece[7]  = '*';
+        piece[8]  = ')';
+        piece[9]  = '/';
         piece[10] = 'm';
         piece[11] = ' ';
     }
     else if (state == 2 || state == 4) {
         // The cell's piece is set to a cat piece
-        piece[0] = ' ';
-        piece[1] = '(';
-        piece[2] = '=';
-        piece[3] = '0';
-        piece[4] = 'w';
-        piece[5] = '0';
-        piece[6] = '=';
-        piece[7] = ')';
-        piece[8] = '=';
-        piece[9] = '=';
+        piece[0]  = ' ';
+        piece[1]  = '(';
+        piece[2]  = '=';
+        piece[3]  = '0';
+        piece[4]  = 'w';
+        piece[5]  = '0';
+        piece[6]  = '=';
+        piece[7]  = ')';
+        piece[8]  = '=';
+        piece[9]  = '=';
         piece[10] = '>';
         piece[11] = ' ';
     }
@@ -145,7 +145,7 @@ void Boop::make_move(const std::string& move) {
                     p1_kpieces--;
                 }
                 else {
-                    cell.set_state(1);
+                    cell.set_state(3);
                     board[i][j] = cell;
                     p2_kpieces--;
                 }
@@ -228,8 +228,8 @@ void Boop::display_status() const{
     cout << "\t\t\t\t" << BOLD << "Moves completed: " << RESET << moves_completed() << endl; 
     cout << BOLD << YELLOW << "\tPlayer 1's status:" << "\t\t\t\t" << BLUE << "Player 2's status:" << RESET << endl;
     cout << "--------------------------\t\t\t\t--------------------------" << endl;
-    cout << YELLOW << "\t  Kitten pieces: " << RESET << p1_kpieces << BLUE << "\t\t\t\tKitten Pieces: " << RESET << p1_cpieces << endl;
-    cout << YELLOW << "\t     Cat pieces: " << RESET << p2_kpieces << BLUE << "\t\t\t\tCat Pieces:    " << RESET << p2_cpieces << endl;
+    cout << YELLOW << "\t  Kitten pieces: " << RESET << p1_kpieces << BLUE << "\t\t\t\tKitten Pieces: " << RESET << p2_kpieces << endl;
+    cout << YELLOW << "\t     Cat pieces: " << RESET << p1_cpieces << BLUE << "\t\t\t\tCat Pieces:    " << RESET << p2_cpieces << endl;
     cout << endl;
 }
 
