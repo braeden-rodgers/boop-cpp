@@ -12,16 +12,15 @@
 #ifndef BOOP_H
 #define BOOP_H
 
-#include <iostream>
-#include <queue>
-#include <string>
-#include "game.h"
+#include <queue>    // Provides queue<string>
+#include <string>   // Provides string
+#include "game.h"   // Provides Game class
 
 static const int SIZE = 6;
 static const int CELL_HEIGHT = 6;
 static const int CELL_WIDTH = CELL_HEIGHT * 2;
 
-// An independent class representing a single cell within the "boop." game board
+// A helper class representing a single cell within the "boop." game board
 class Cell{
     public:
         // Cell constructor
@@ -37,7 +36,7 @@ class Cell{
         void get_piece(int i) const;
 
         // Setter method to change the state of the cell
-        void set_state(int state);
+        void set_state(int val);
 
         // Setter method to change the name of the location
         void set_location(std::string name);
@@ -52,8 +51,43 @@ class Cell{
                                 // 2 - Contains player 1's cat piece
                                 // 3 - Contains player 2's kitten piece
                                 // 4 - Contains player 2's cat piece
-        std::string location;   // The named location of the cell
-        char piece[12];         // One line character array depicting a kitten piece, cat piece, or nothing
+        std::string location;   // The named location of the cell        
+        char piece[CELL_WIDTH]; // One line character array depicting a kitten piece, cat piece, or nothing
+};
+
+// A helper class containing attributes that a single player of Boop has
+class Player {
+    public:
+        // Player constructor
+        Player();
+
+        // Getter method for the player's kitten pieces
+        int get_kitten_pieces() const;
+
+        // Getter method for the player's cat pieces
+        int get_cat_pieces() const;
+
+        // Setter method for the player's kitten pieces
+        void set_kitten_pieces(int pieces);
+
+        // Setter method for the player's cat pieces
+        void set_cat_pieces(int pieces);
+
+        // Method to increment the value of the player's kitten pieces
+        void incr_kitten_pieces();
+
+        // Method to decrement the value of the player's kitten pieces
+        void decr_kitten_pieces();
+
+        // Method to increment the value of the player's cat pieces
+        void incr_cat_pieces();
+
+        // Method to decrement the value of the player's cat pieces
+        void decr_cat_pieces();
+
+    private:
+        int kitten_pieces;  // The player's kitten pieces
+        int cat_pieces;     // The player's cat pieces
 };
 
 // A derived class of Game class representing an entire round of the "boop." game
@@ -62,17 +96,13 @@ class Boop: public main_savitch_14::Game {
         // Boop constructor
         Boop();
 
-        // Getter method for player 1's kitten pieces 
-        int get_p1_kpieces() const;
+        // Helper method for make_move to boop the adjacent kitten pieces
+        void boop_pieces();
 
-        // Getter method for player 1's cat pieces 
-        int get_p1_cpieces() const;
-
-        // Getter method for player 2's kitten pieces 
-        int get_p2_kpieces() const;
-
-        // Getter method for player 2's cat pieces 
-        int get_p2_cpieces() const;
+        /*
+        // Helper method for make_move to graduate kitten pieces into cat pieces
+        void graduate_pieces() const;
+        */
 
         // *******************************************************************
         // VIRTUAL METHODS THAT MUST BE OVERRIDDEN (The overriding method
@@ -90,10 +120,10 @@ class Boop: public main_savitch_14::Game {
         // for each derived class)
         // *******************************************************************
 
-        // Virtual method that clones
+        // Virtual method that calls the copy constructor to make a copy of the current game
 	    main_savitch_14::Game* clone() const;
 
-        // Virtual method that computes all the moves that the next player can make
+        // Virtual method to compute all the moves that the next player can make
 		void compute_moves(std::queue<std::string>& moves) const;
 
         // Virtual method to display the status of the game
@@ -109,11 +139,11 @@ class Boop: public main_savitch_14::Game {
 		bool is_legal(const std::string& move) const;
 
     private:
-        Cell board[SIZE][SIZE]; // 2-D array of Cell objects as the 6x6 board of Boop game.
-        int p1_kpieces;         // Player 1's kitten pieces
-        int p1_cpieces;         // Player 1's cat pieces
-        int p2_kpieces;         // Player 2's kitten pieces
-        int p2_cpieces;         // Player 2's cat pieces
+        // int row_idx;            // The current index of the selected row for fast access
+        // int col_idx;            // The current index of the selected column for fast access
+        Player p1;              // Player 1 with their kitten and cat pieces
+        Player p2;              // Player 2 with their kitten and cat pieces
+        Cell board[SIZE][SIZE]; // 2-D array of Cell objects as the 6x6 game board.
 };
 
 #endif  // BOOP_H
