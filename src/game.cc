@@ -5,13 +5,13 @@
  * 
  */
 
-#include <cassert>    // Provides assert
-#include <climits>    // Provides INT_MAX and INT_MIN
-#include <iostream>   // Provides cin, cout
-#include <queue>      // Provides queue<string>
-#include <string>     // Provides string
-#include "game.h"     // Provides definition of game class
-#include <colors.h>
+#include <cassert>    	// Provides assert
+#include <climits>   	// Provides INT_MAX and INT_MIN
+#include <iostream>   	// Provides cin, cout
+#include <queue>      	// Provides queue<string>
+#include <string>     	// Provides string
+#include "game.h"		// Provides definition of game class
+#include <colors.h>		// Provides text colors
 
 using namespace std;
 
@@ -19,15 +19,13 @@ namespace main_savitch_14 {
     Game::who Game::play() {
 		restart();
 
-		// Note that as you develop the game you will be gradually un-commenting this method.	
-		//while(!is_game_over())
-		//{
+		while(!is_game_over()) {
 			display_status();
 			//if (last_mover() == COMPUTER)
 				make_human_move();
 			//else
 				//make_computer_move();
-		//}
+		}
         
 		display_status();
 		return HUMAN;
@@ -43,9 +41,8 @@ namespace main_savitch_14 {
 		display_message("Your move, please: ");
 		getline(cin, move);
 
-		if (!move.empty())
-    		move[0] = (char)toupper(move[0]);
-
+		// Case sensitivity is automatically handled
+    	move[0] = (char)toupper(move[0]);
 		return move;
     }
 
@@ -110,7 +107,7 @@ namespace main_savitch_14 {
 		queue<string> moves;
 		int val;
 		int best_val;
-		string best_mv;
+		string best_move;
 		Game* future;
 		
 		// Compute all legal moves that the computer could make.
@@ -127,19 +124,20 @@ namespace main_savitch_14 {
 			delete future;
 			if (val >= best_val) {
 				best_val = val;
-				best_mv = moves.front();
+				best_move = moves.front();
 			}
 			moves.pop();
 		}
 	    
 		// Make the best move.
-		make_move(best_mv);
+		make_move(best_move);
     }
 
     void Game::make_human_move() {
         string move;
 		move = get_user_move();
 		
+		// Check the validity of the user's next move
 		while (!is_legal(move)) {
 			cout << RED;
 			display_message("Illegal move.\n");
