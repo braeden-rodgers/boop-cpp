@@ -59,6 +59,8 @@ void Cell::set_piece(int state) {
     else if (state == 2 || state == 4)
         // The cell's piece is set to a cat piece
         strcpy(piece, "(=^0w0^=)==>");
+    else
+        fill(piece, piece + CELL_WIDTH, ' ');
 }
 
 bool Cell::operator == (const Cell& cell) const{
@@ -81,13 +83,13 @@ void Player::set_kitten_pieces(int pieces) {kitten_pieces = pieces;}
 
 void Player::set_cat_pieces(int pieces) {cat_pieces = pieces;}
 
-void Player::incr_kitten_pieces() {++kitten_pieces;}
+void Player::incr_kitten_pieces() {kitten_pieces++;}
 
-void Player::decr_kitten_pieces() {--kitten_pieces;}
+void Player::decr_kitten_pieces() {kitten_pieces--;}
 
-void Player::incr_cat_pieces() {++cat_pieces;}
+void Player::incr_cat_pieces() {cat_pieces++;}
 
-void Player::decr_cat_pieces() {--cat_pieces;}
+void Player::decr_cat_pieces() {cat_pieces--;}
 
 // *******************************************************************
 // BOOP CLASS
@@ -101,9 +103,10 @@ Boop::Boop() {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
             Cell cell;
-            string location;
-            location = string(1, col_letter) + row_num;
+            string location = string(1, col_letter) + row_num;
             cell.set_location(location);
+            cell.set_state(0);
+            cell.set_piece(0);
             board[i][j] = cell;
             ++col_letter;
         }
@@ -112,12 +115,58 @@ Boop::Boop() {
     }
 }
 
+bool Boop::is_inbound(int i, int j) {
+    return i >= 0 && i < SIZE && j >= 0 && j < SIZE;
+}
+
 void Boop::boop_kpieces(int i, int j) {
-    // Notes:
-    // - Adjacement kittens are booped regardless of color
-    // - Booping does not cause chain reactions
-    // - If two pieces in line are already set and a piece is placed, those two pieces do not move
-    
+    cout << endl;
+    cout << "Placed piece: " << "(" << i << ", " << j << ")" << endl;
+
+    // Scan for all valid moves to boop
+    for (int k = 0; k < DIRS; k++) {
+        // Form an index pair of the direction of an adjacent cell from the placed piece in the center cell
+        int r_idx = i + r_dirs[k];
+        int c_idx = j + c_dirs[k];
+
+        // Check whether or not the index pair is within the bounds of the game board
+        if (!is_inbound(r_idx, c_idx)) continue;
+        Cell adj_cell = board[r_idx][c_idx];
+
+        // Check if there is a piece in the adjacent cell
+        if (adj_cell.get_state() != 0) {
+            cout << "Adjacent piece detected: " << "(" << r_idx << ", " << c_idx << ")" << endl;
+
+            // Form an index pair of the cell the booped adjacent piece will move to
+            int nr_idx = r_idx + r_dirs[k];
+            int nc_idx = c_idx + c_dirs[k];
+            Cell new_cell = board[nr_idx][nc_idx];
+
+            // Check if a piece will fall off the game board
+            if (!is_inbound(nr_idx, nc_idx)) {
+                cout << "(" << r_idx << ", " << c_idx << ") has fell off the board" << endl;
+                if (adj_cell.get_state() == 1) p1.incr_kitten_pieces();
+                else if (adj_cell.get_state() == 3) p2.incr_kitten_pieces();
+                adj_cell.set_state(0);
+                adj_cell.set_piece(0);
+                board[r_idx][c_idx] = adj_cell;
+                board[nr_idx][nc_idx] = new_cell;
+            }
+            else if ((board[nr_idx][nc_idx]).get_state() == 0) {
+                // Move the adjacment piece to the next cell in its direction
+                new_cell.set_state(adj_cell.get_state());
+                new_cell.set_piece(adj_cell.get_state());
+                adj_cell.set_state(0);
+                adj_cell.set_piece(0);
+                board[r_idx][c_idx] = adj_cell;
+                board[nr_idx][nc_idx] = new_cell;
+                cout << "(" << r_idx << ", " << c_idx << ") --> (" << nr_idx << ", " << nc_idx << ")" << endl;
+            }
+            // If neither of the previous statements has been executed, a blocking has occured
+            // as there are two pieces in line with a placed piece
+        }
+    }
+
     return;
 }
 
@@ -341,13 +390,14 @@ bool Boop::is_legal(const string& move) const {
 
     // Verify the row number and column letter
     char row = move.at(1);
-    char column = move.at(0);
+    char col = move.at(0);
     if (row < '1' || row >= '1' + SIZE) return false;
-    if (column < 'A' || column >= 'A' + SIZE) return false;
+    if (col < 'A' || col >= 'A' + SIZE) return false;
 
     // Verify that the selected cell is empty
     int r_idx = row - '1';
-    int c_idx = column - 'A';
+    int c_idx = col - 'A';
+
     if (board[r_idx][c_idx].get_state() == 0) return true;
 
     return false;
