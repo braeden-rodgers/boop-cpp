@@ -20,7 +20,7 @@ static const int SIZE = 6;
 static const int CELL_HEIGHT = 6;
 static const int CELL_WIDTH = CELL_HEIGHT * 2;
 
-// A helper class representing a single cell within the "boop." game board
+// A helper class for Boop class representing a single cell within the game board
 class Cell{
     public:
         // Cell constructor
@@ -44,7 +44,7 @@ class Cell{
         // Setter method to change the cell's piece
         void set_piece(int state);
 
-        // Overloading method for the == operator to check the winning conditions
+        // Overloaded method for the == operator to check the winning conditions
         bool operator == (const Cell &obj) const;
 
     private:
@@ -55,10 +55,10 @@ class Cell{
                                 // 3 - Contains player 2's kitten piece
                                 // 4 - Contains player 2's cat piece
         std::string location;   // The named location of the cell        
-        char piece[CELL_WIDTH]; // One line character array depicting a kitten piece, cat piece, or nothing
+        char piece[CELL_WIDTH]; // One-line character array depicting a kitten piece, cat piece, or nothing
 };
 
-// A helper class containing attributes that a single player of Boop has
+// A helper class containing attributes that a single player has in the "boop." game
 class Player {
     public:
         // Player constructor
@@ -99,21 +99,24 @@ class Boop: public main_savitch_14::Game {
         // Boop constructor
         Boop();
 
-        // Helper method for make_move to boop the adjacent kitten pieces
-        void boop_pieces();
+        // Helper method for make_move when a kitten piece boops its adjacent kitten pieces
+        void boop_kpieces(int i, int j);
+
+        // Helper method for make_move when a cat piece boops its adjacent pieces
+        void boop_pieces(int i, int j);
 
         // Helper method for make_move to graduate kitten pieces into cat pieces
-        void graduate_pieces() const;
+        void graduate_pieces();
 
         // *******************************************************************
         // VIRTUAL METHODS THAT MUST BE OVERRIDDEN (The overriding method
         // should call the original when it finishes)
         // *******************************************************************
 
-        // Virtual method to have the next player make a specified move
+        // Overriding method to have the next player make a specified move
         void make_move(const std::string& move);
 
-        // Virtual method to restart the game from the beginning
+        // Overriding method to restart the game from the beginning
         void restart();
 
         // *******************************************************************
@@ -121,22 +124,22 @@ class Boop: public main_savitch_14::Game {
         // for each derived class)
         // *******************************************************************
 
-        // Virtual method that calls the copy constructor to make a copy of the current game
+        // Derived method that calls the copy constructor to make a copy of the current game
 	    main_savitch_14::Game* clone() const;
 
-        // Virtual method to compute all the moves that the next player can make
+        // Derived method to compute all the moves that the next player can make
 		void compute_moves(std::queue<std::string>& moves) const;
 
-        // Virtual method to display the status of the game
+        // Derived method to display the status of the game
 		void display_status() const;
 
-        // Virtual method to evaluate a board position
+        // Derived method to evaluate a board position
 		int evaluate() const;
 
-        // Virtual method to scan the game board and check if the winning conditions are met
+        // Derived method to scan the game board and check if the winning conditions are met
 		bool is_game_over() const;
 
-        // Virtual method to determine whether or not the given move is legal for the next player
+        // Derived method to determine whether or not the given move is legal for the next player
 		bool is_legal(const std::string& move) const;
 
     private:

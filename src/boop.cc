@@ -71,9 +71,7 @@ bool Cell::operator == (const Cell& cell) const{
 // PLAYER CLASS
 // *******************************************************************
 
-Player::Player() {
-    kitten_pieces = cat_pieces = 8;
-}
+Player::Player() {kitten_pieces = cat_pieces = 8;}
 
 int Player::get_kitten_pieces() const {return kitten_pieces;}
 
@@ -114,34 +112,46 @@ Boop::Boop() {
     }
 }
 
-void Boop::boop_pieces() {
+void Boop::boop_kpieces(int i, int j) {
     // Notes:
     // - Adjacement kittens are booped regardless of color
     // - Booping does not cause chain reactions
     // - If two pieces in line are already set and a piece is placed, those two pieces do not move
+    
     return;
 }
 
-void Boop::graduate_pieces() const {
+void Boop::boop_pieces(int i, int j) {
+    // Notes:
+    //  - Cats boop the same as kitten pieces except they can actually boop other cat pieces
+    //  - When you line up 3 of your pieces with a combination of Cats and Kittens, you still remove
+    //      all three pieces from the board and graduate any Kittens. (fig. 5) The Cats in the group go 
+    //      to your pool, as do any newly graduated
+}
+
+void Boop::graduate_pieces() {
+    // Implement code here
+    // Might need to add an argument specifying how many kittens are graduated into cats
     return;
 }
 
-void Boop::make_move(const std::string& move) {
+void Boop::make_move(const string& move) {
     Cell cell;
     int state;
     bool cat = false;
 
     // Ask the current player if they want to use an available cat piece
-        // Implement code here
+    // ...
 
-    // Place the upcoming piece on the board
+    // Scan the game board to find the selected cell
     for(int i = 0; i < SIZE; i++) {
         for(int j = 0; j < SIZE; j++) {
+            // Place the upcoming piece on the board
             if (move == (board[i][j]).get_location()){
                 // Set player 1's game piece
                 if (next_mover() == HUMAN){
                     if (!cat) {
-                        state = 2;
+                        state = 1;
                         p1.decr_kitten_pieces();
                     }
                     else {
@@ -162,16 +172,18 @@ void Boop::make_move(const std::string& move) {
                 }
                 (board[i][j]).set_state(state);
                 (board[i][j]).set_piece(state);
+
+                // Trigger the booping mechanism depending on piece type once the new piece has been set
+                if (!cat) boop_kpieces(i, j);
+                else boop_pieces(i, j);
+
+                // Graduate kitten pieces into cat pieces if necessary
+                graduate_pieces();
+
                 break;
             }
         }
     }
-
-    // Call the booping mechanism so that the adjacent kitten pieces are booped once the piece has been set
-    // boop_pieces();
-
-    // Graduate kitten pieces into cat pieces
-    // graduate_pieces();
 
     Game::make_move(move);
 }
@@ -181,7 +193,6 @@ void Boop::restart() {
     
     // Reset the players' game pieces
 
-    // cout << "test" << endl;
     Game::restart();
 }
 
@@ -264,7 +275,7 @@ void Boop::display_status() const{
 }
 
 int Boop::evaluate() const {
-    // Implement code here
+    // STUB METHOD
     return 0;
 }
 
@@ -273,46 +284,50 @@ bool Boop::is_game_over() const {
     if ((next_mover() == HUMAN && p1.get_cat_pieces() == 0) || (next_mover() == COMPUTER && p2.get_cat_pieces() == 0))
         return true;    
 
-    // Check for 3-piece cat rows
+    // Scan all 3-piece cat rows
     for (int i = 0; i < SIZE; i++) {
         for (int j = 1; j < SIZE - 1; j++) {
             Cell left = board[i][j - 1];
             Cell middle = board[i][j];
             Cell right = board[i][j + 1];
 
+            // Winning row condition is met
             if (middle == left && middle == right) return true;
         }
     }
 
-    // Check for 3-piece cat columns
+    // Scan all 3-piece cat columns
     for (int i = 1; i < SIZE - 1; i++) {
         for (int j = 0; j < SIZE; j++) {
             Cell top = board[i - 1][j];
             Cell middle = board[i][j];
             Cell bottom = board[i + 1][j];
 
+            // Winning column condition is met
             if (middle == top && middle == bottom) return true;
         }
     }
 
-    // Check for 3-piece cat rising diagonals
+    // Scan all 3-piece cat rising diagonals
     for (int i = 1; i < SIZE - 1; i++) {
         for (int j = 0; j < SIZE - 1; j++) {
             Cell l_bottom = board[i + 1][j - 1];
             Cell middle = board[i][j];
             Cell r_top = board[i - 1][j + 1];
 
+            // Winning diagonal condition is met
             if (middle == l_bottom && middle == r_top) return true;
         }
     }
 
-    // Check for 3-piece cat falling diagonals
+    // Scan all 3-piece cat falling diagonals
     for (int i = 1; i < SIZE - 1; i++) {
         for (int j = 0; j < SIZE - 1; j++) {
             Cell l_top = board[i - 1][j - 1];
             Cell middle = board[i][j];
             Cell r_bottom = board[i + 1][j + 1];
-
+            
+            // Winning diagonal condition is met
             if (middle == l_top && middle == r_bottom) return true;
         }
     }
