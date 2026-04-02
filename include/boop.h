@@ -45,7 +45,7 @@ class Cell{
         void set_piece(int state);
 
         // Overloading method for the == operator to check the winning conditions
-        // bool operator == (const Cell &obj) const;
+        bool operator == (const Cell &obj) const;
 
     private:
         int state;              // Mutable state of the cell; There are 5 possible states a cell can have:

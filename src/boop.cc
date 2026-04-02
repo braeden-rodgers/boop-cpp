@@ -61,11 +61,11 @@ void Cell::set_piece(int state) {
         strcpy(piece, "(=^0w0^=)==>");
 }
 
-// bool Cell::operator == (const Cell& cell) const{
-//     if((state == 2 && cell.get_state() == 2) || (state == 4 && cell.get_state() == 4))
-//         return true;
-//     return false;
-// }
+bool Cell::operator == (const Cell& cell) const{
+    if((state == 2 && cell.get_state() == 2) || (state == 4 && cell.get_state() == 4))
+        return true;
+    return false;
+}
 
 // *******************************************************************
 // PLAYER CLASS
@@ -270,20 +270,52 @@ int Boop::evaluate() const {
 
 bool Boop::is_game_over() const {
     // Check if the player has all 8 cat pieces on the board
-    // if ((next_mover() == HUMAN && p1.get_cat_pieces() == 0) || (next_mover() == COMPUTER && p2.get_cat_pieces() == 0))
-    //     return true;    
-
-    //  [i-1][j-1]      [i-1][j]        [i-1][j+1]
-    //  [i][j-1]        [i][j]          [i][j+1]
-    //  [i+1][j-1]      [i+1][j]        [i+1][j+1]
+    if ((next_mover() == HUMAN && p1.get_cat_pieces() == 0) || (next_mover() == COMPUTER && p2.get_cat_pieces() == 0))
+        return true;    
 
     // Check for 3-piece cat rows
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 1; j < SIZE - 1; j++) {
+            Cell left = board[i][j - 1];
+            Cell middle = board[i][j];
+            Cell right = board[i][j + 1];
+
+            if (middle == left && middle == right) return true;
+        }
+    }
 
     // Check for 3-piece cat columns
+    for (int i = 1; i < SIZE - 1; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            Cell top = board[i - 1][j];
+            Cell middle = board[i][j];
+            Cell bottom = board[i + 1][j];
+
+            if (middle == top && middle == bottom) return true;
+        }
+    }
 
     // Check for 3-piece cat rising diagonals
+    for (int i = 1; i < SIZE - 1; i++) {
+        for (int j = 0; j < SIZE - 1; j++) {
+            Cell l_bottom = board[i + 1][j - 1];
+            Cell middle = board[i][j];
+            Cell r_top = board[i - 1][j + 1];
+
+            if (middle == l_bottom && middle == r_top) return true;
+        }
+    }
 
     // Check for 3-piece cat falling diagonals
+    for (int i = 1; i < SIZE - 1; i++) {
+        for (int j = 0; j < SIZE - 1; j++) {
+            Cell l_top = board[i - 1][j - 1];
+            Cell middle = board[i][j];
+            Cell r_bottom = board[i + 1][j + 1];
+
+            if (middle == l_top && middle == r_bottom) return true;
+        }
+    }
 
     return false;
 }
