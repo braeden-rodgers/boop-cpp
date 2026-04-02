@@ -20,8 +20,8 @@ static const int SIZE = 6;
 static const int CELL_HEIGHT = 6;
 static const int CELL_WIDTH = CELL_HEIGHT * 2;
 static const int DIRS = 8;
-int r_dirs[DIRS] = {-1, -1, -1, 0, 0, 1, 1, 1};
-int c_dirs[DIRS] = {-1, 0, 1, -1, 1, -1, 0, 1};
+static int r_dirs[DIRS] = {-1, -1, -1, 0, 0, 1, 1, 1};
+static int c_dirs[DIRS] = {-1, 0, 1, -1, 1, -1, 0, 1};
 
 // A helper class for Boop class representing a single cell within the game board
 class Cell{
@@ -30,19 +30,19 @@ class Cell{
         Cell();
 
         // Getter method for the state of the cell
-        int get_state() const;
+        int get_state() const {return state;}
 
         // Getter method to get the named location of the cell
-        std::string get_location() const;
+        std::string get_location() const {return location;}
         
         // Getter method to display either one of the players' kitten or cat piece depending on the cell's state
         void get_piece(int i) const;
 
         // Setter method to change the state of the cell
-        void set_state(int val);
+        void set_state(int val) {state = val;}
 
         // Setter method to change the name of the location
-        void set_location(std::string name);
+        void set_location(std::string name) {location = name;}
 
         // Setter method to change the cell's piece
         void set_piece(int state);
@@ -65,31 +65,31 @@ class Cell{
 class Player {
     public:
         // Player constructor
-        Player();
+        Player() {kitten_pieces = cat_pieces = 8;}
 
         // Getter method for the player's kitten pieces
-        int get_kitten_pieces() const;
+        int get_kitten_pieces() const {return kitten_pieces;}
 
         // Getter method for the player's cat pieces
-        int get_cat_pieces() const;
+        int get_cat_pieces() const {return cat_pieces;}
 
         // Setter method for the player's kitten pieces
-        void set_kitten_pieces(int pieces);
+        void set_kitten_pieces(int val) {kitten_pieces = val;}
 
         // Setter method for the player's cat pieces
-        void set_cat_pieces(int pieces);
+        void set_cat_pieces(int val) {cat_pieces = val;}
 
         // Method to increment the value of the player's kitten pieces
-        void incr_kitten_pieces();
+        void incr_kitten_pieces() {kitten_pieces++;}
 
         // Method to decrement the value of the player's kitten pieces
-        void decr_kitten_pieces();
+        void decr_kitten_pieces() {kitten_pieces--;}
 
         // Method to increment the value of the player's cat pieces
-        void incr_cat_pieces();
+        void incr_cat_pieces() {cat_pieces++;}
 
         // Method to decrement the value of the player's cat pieces
-        void decr_cat_pieces();
+        void decr_cat_pieces() {cat_pieces--;}
 
     private:
         int kitten_pieces;  // The player's kitten pieces
@@ -147,7 +147,7 @@ class Boop: public main_savitch_14::Game {
 		bool is_legal(const std::string& move) const;
 
     private:
-        Cell board[SIZE][SIZE]; // 2-D array of Cell objects as the 6x6 game board.
+        Cell board[SIZE][SIZE]; // 2-D array of Cell objects as the 6x6 game board
         Player p1;              // Player 1 with their kitten and cat pieces
         Player p2;              // Player 2 with their kitten and cat pieces
 };

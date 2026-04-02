@@ -24,10 +24,6 @@ Cell::Cell() {
     fill(piece, piece + CELL_WIDTH, ' ');
 }
 
-int Cell::get_state() const {return state;}
-
-string Cell::get_location() const {return location;}
-
 void Cell::get_piece(int i) const {
     switch (state) {
         case 0:
@@ -48,10 +44,6 @@ void Cell::get_piece(int i) const {
     }
 }
 
-void Cell::set_state(int val) {state = val;}
-
-void Cell::set_location(string name) {location = name;}
-
 void Cell::set_piece(int state) {
     if (state == 1 || state == 3)
         // The cell's piece is set to a kitten piece
@@ -68,28 +60,6 @@ bool Cell::operator == (const Cell& cell) const{
         return true;
     return false;
 }
-
-// *******************************************************************
-// PLAYER CLASS
-// *******************************************************************
-
-Player::Player() {kitten_pieces = cat_pieces = 8;}
-
-int Player::get_kitten_pieces() const {return kitten_pieces;}
-
-int Player::get_cat_pieces() const {return cat_pieces;}
-
-void Player::set_kitten_pieces(int pieces) {kitten_pieces = pieces;}
-
-void Player::set_cat_pieces(int pieces) {cat_pieces = pieces;}
-
-void Player::incr_kitten_pieces() {kitten_pieces++;}
-
-void Player::decr_kitten_pieces() {kitten_pieces--;}
-
-void Player::incr_cat_pieces() {cat_pieces++;}
-
-void Player::decr_cat_pieces() {cat_pieces--;}
 
 // *******************************************************************
 // BOOP CLASS
@@ -135,8 +105,6 @@ void Boop::boop_kpieces(int i, int j) {
 
         // Check if there is a piece in the adjacent cell
         if (adj_cell.get_state() != 0) {
-            cout << "Adjacent piece detected: " << "(" << r_idx << ", " << c_idx << ")" << endl;
-
             // Form an index pair of the cell the booped adjacent piece will move to
             int nr_idx = r_idx + r_dirs[k];
             int nc_idx = c_idx + c_dirs[k];
@@ -144,7 +112,6 @@ void Boop::boop_kpieces(int i, int j) {
 
             // Check if a piece will fall off the game board
             if (!is_inbound(nr_idx, nc_idx)) {
-                cout << "(" << r_idx << ", " << c_idx << ") has fell off the board" << endl;
                 if (adj_cell.get_state() == 1) p1.incr_kitten_pieces();
                 else if (adj_cell.get_state() == 3) p2.incr_kitten_pieces();
                 adj_cell.set_state(0);
@@ -160,7 +127,6 @@ void Boop::boop_kpieces(int i, int j) {
                 adj_cell.set_piece(0);
                 board[r_idx][c_idx] = adj_cell;
                 board[nr_idx][nc_idx] = new_cell;
-                cout << "(" << r_idx << ", " << c_idx << ") --> (" << nr_idx << ", " << nc_idx << ")" << endl;
             }
             // If neither of the previous statements has been executed, a blocking has occured
             // as there are two pieces in line with a placed piece
