@@ -43,7 +43,10 @@ class Cell{
 
         // Setter method to change the cell's piece
         void set_piece(int state);
-    
+
+        // Overloading method for the == operator to check the winning conditions
+        // bool operator == (const Cell &obj) const;
+
     private:
         int state;              // Mutable state of the cell; There are 5 possible states a cell can have:
                                 // 0 - Empty cell
@@ -99,10 +102,8 @@ class Boop: public main_savitch_14::Game {
         // Helper method for make_move to boop the adjacent kitten pieces
         void boop_pieces();
 
-        /*
         // Helper method for make_move to graduate kitten pieces into cat pieces
         void graduate_pieces() const;
-        */
 
         // *******************************************************************
         // VIRTUAL METHODS THAT MUST BE OVERRIDDEN (The overriding method
@@ -132,18 +133,16 @@ class Boop: public main_savitch_14::Game {
         // Virtual method to evaluate a board position
 		int evaluate() const;
 
-        // Virtual method to determine whether or not the game is finished
+        // Virtual method to scan the game board and check if the winning conditions are met
 		bool is_game_over() const;
 
         // Virtual method to determine whether or not the given move is legal for the next player
 		bool is_legal(const std::string& move) const;
 
     private:
-        // int row_idx;            // The current index of the selected row for fast access
-        // int col_idx;            // The current index of the selected column for fast access
+        Cell board[SIZE][SIZE]; // 2-D array of Cell objects as the 6x6 game board.
         Player p1;              // Player 1 with their kitten and cat pieces
         Player p2;              // Player 2 with their kitten and cat pieces
-        Cell board[SIZE][SIZE]; // 2-D array of Cell objects as the 6x6 game board.
 };
 
 #endif  // BOOP_H

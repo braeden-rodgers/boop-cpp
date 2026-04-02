@@ -61,6 +61,12 @@ void Cell::set_piece(int state) {
         strcpy(piece, "(=^0w0^=)==>");
 }
 
+// bool Cell::operator == (const Cell& cell) const{
+//     if((state == 2 && cell.get_state() == 2) || (state == 4 && cell.get_state() == 4))
+//         return true;
+//     return false;
+// }
+
 // *******************************************************************
 // PLAYER CLASS
 // *******************************************************************
@@ -91,42 +97,34 @@ void Player::decr_cat_pieces() {--cat_pieces;}
 
 Boop::Boop() {
     p1 = p2 = Player();
-    char row_letter = 'A';
-    char col_num = '1';
+    char row_num = '1';
+    char col_letter = 'A';
     
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
             Cell cell;
             string location;
-            location = string(1, row_letter) + col_num;
+            location = string(1, col_letter) + row_num;
             cell.set_location(location);
             board[i][j] = cell;
-            ++col_num;
+            ++col_letter;
         }
-        row_letter++;
-        col_num = '1';
+        ++row_num;
+        col_letter = 'A';
     }
 }
 
 void Boop::boop_pieces() {
-    //  [i-1][j-1]      [i-1][j]        [i-1][j+1]
-    //  [i][j-1]        [i][j]          [i][j+1]
-    //  [i+1][j-1]      [i+1][j]        [i+1][j+1]
-
     // Notes:
     // - Adjacement kittens are booped regardless of color
     // - Booping does not cause chain reactions
     // - If two pieces in line are already set and a piece is placed, those two pieces do not move
-
-
-
+    return;
 }
 
-/*
 void Boop::graduate_pieces() const {
-
+    return;
 }
-*/
 
 void Boop::make_move(const std::string& move) {
     Cell cell;
@@ -134,15 +132,16 @@ void Boop::make_move(const std::string& move) {
     bool cat = false;
 
     // Ask the current player if they want to use an available cat piece
+        // Implement code here
 
     // Place the upcoming piece on the board
     for(int i = 0; i < SIZE; i++) {
         for(int j = 0; j < SIZE; j++) {
             if (move == (board[i][j]).get_location()){
-                // Set player 1's piece
+                // Set player 1's game piece
                 if (next_mover() == HUMAN){
                     if (!cat) {
-                        state = 1;
+                        state = 2;
                         p1.decr_kitten_pieces();
                     }
                     else {
@@ -150,7 +149,7 @@ void Boop::make_move(const std::string& move) {
                         p1.decr_cat_pieces();
                     }
                 }
-                // Set player 2's piece
+                // Set player 2's game piece
                 else {
                     if (!cat) {
                         state = 3;
@@ -169,15 +168,21 @@ void Boop::make_move(const std::string& move) {
     }
 
     // Call the booping mechanism so that the adjacent kitten pieces are booped once the piece has been set
+    // boop_pieces();
 
     // Graduate kitten pieces into cat pieces
+    // graduate_pieces();
 
     Game::make_move(move);
 }
 
 void Boop::restart() {
-    // Implement code here
-    return;
+    // Clear the game board
+    
+    // Reset the players' game pieces
+
+    // cout << "test" << endl;
+    Game::restart();
 }
 
 Game* Boop::clone() const{
@@ -227,7 +232,7 @@ void Boop::display_status() const{
                 for (int w = 0; w < CELL_WIDTH; w++) {
                     // Print the center piece
                     if (h == CELL_HEIGHT / 2) 
-                        (board[c][r]).get_piece(w);
+                        (board[r][c]).get_piece(w);
                     else
                         cout << " ";
                 }
@@ -265,10 +270,16 @@ int Boop::evaluate() const {
 
 bool Boop::is_game_over() const {
     // Check if the player has all 8 cat pieces on the board
+    // if ((next_mover() == HUMAN && p1.get_cat_pieces() == 0) || (next_mover() == COMPUTER && p2.get_cat_pieces() == 0))
+    //     return true;    
+
+    //  [i-1][j-1]      [i-1][j]        [i-1][j+1]
+    //  [i][j-1]        [i][j]          [i][j+1]
+    //  [i+1][j-1]      [i+1][j]        [i+1][j+1]
 
     // Check for 3-piece cat rows
 
-    // Check for 3-piece cat verticals
+    // Check for 3-piece cat columns
 
     // Check for 3-piece cat rising diagonals
 
@@ -277,34 +288,20 @@ bool Boop::is_game_over() const {
     return false;
 }
 
-bool Boop::is_legal(const std::string& move) const {
+bool Boop::is_legal(const string& move) const {
     // Verify the length of the move string
-    if (move.length() != 2) 
-        return false;
+    if (move.length() != 2) return false;
 
-    char column = move.at(0);
+    // Verify the row number and column letter
     char row = move.at(1);
+    char column = move.at(0);
+    if (row < '1' || row >= '1' + SIZE) return false;
+    if (column < 'A' || column >= 'A' + SIZE) return false;
 
-    // Verify the column letter and the row number
-    if (column >= 'A' && column <= 'F') {
-        if (row >= '1' && row <= '6') {
-            Cell cell;
+    // Verify that the selected cell is empty
+    int r_idx = row - '1';
+    int c_idx = column - 'A';
+    if (board[r_idx][c_idx].get_state() == 0) return true;
 
-            for (int i = 0; i < SIZE; i++) {
-                for (int j = 0; j < SIZE; j++) {
-                    cell = board[i][j];
-                    
-                    // Verify that the selected cell is empty
-                    if (move == cell.get_location()){
-                        if (cell.get_state() == 0)
-                            return true;
-                        else
-                            return false;
-                    }
-                }
-            }
-        }
-    }
-    
     return false;
 }
