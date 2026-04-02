@@ -19,6 +19,9 @@
 static const int SIZE = 6;
 static const int CELL_HEIGHT = 6;
 static const int CELL_WIDTH = CELL_HEIGHT * 2;
+static const int DIRS = 8;
+int r_dirs[DIRS] = {-1, -1, -1, 0, 0, 1, 1, 1};
+int c_dirs[DIRS] = {-1, 0, 1, -1, 1, -1, 0, 1};
 
 // A helper class for Boop class representing a single cell within the game board
 class Cell{
@@ -98,19 +101,21 @@ class Boop: public main_savitch_14::Game {
     public:
         // Boop constructor
         Boop();
+        
+        // ...
+        bool is_inbound(int i, int j);
 
-        // Helper method for make_move when a kitten piece boops its adjacent kitten pieces
+        // Helper method for make_move when a kitten piece boops ONLY its adjacent kitten pieces
         void boop_kpieces(int i, int j);
 
-        // Helper method for make_move when a cat piece boops its adjacent pieces
+        // Helper method for make_move when a cat piece boops ALL its adjacent pieces
         void boop_pieces(int i, int j);
 
         // Helper method for make_move to graduate kitten pieces into cat pieces
         void graduate_pieces();
 
         // *******************************************************************
-        // VIRTUAL METHODS THAT MUST BE OVERRIDDEN (The overriding method
-        // should call the original when it finishes)
+        // OVERRIDDEN VIRTUAL METHODS
         // *******************************************************************
 
         // Overriding method to have the next player make a specified move
@@ -120,8 +125,7 @@ class Boop: public main_savitch_14::Game {
         void restart();
 
         // *******************************************************************
-        // PURE VIRTUAL METHODS (The pure virtual methods must be provided
-        // for each derived class)
+        // PURE VIRTUAL METHODS
         // *******************************************************************
 
         // Derived method that calls the copy constructor to make a copy of the current game
