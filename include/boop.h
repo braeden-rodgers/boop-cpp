@@ -34,13 +34,13 @@ class Cell{
         int get_state() const {return state;}
         
         // Getter method to display either one of the players' kitten or cat piece depending on the cell's state
-        void get_piece(int i) const;
+        void get_piece(int i, int j) const;
 
         // Setter method to change the state of the cell
         void set_state(int val) {state = val;}
 
         // Setter method to change the cell's piece
-        void set_piece(int state);
+        void set_piece(char p[CELL_HEIGHT][CELL_WIDTH]);
 
         // Overloaded method for the == operator to check the winning conditions
         bool operator == (const Cell &cell) const {return (state == 2 && cell.get_state() == 2) || (state == 4 && cell.get_state() == 4);}
@@ -52,8 +52,7 @@ class Cell{
                                 // 2 - Contains player 1's cat piece
                                 // 3 - Contains player 2's kitten piece
                                 // 4 - Contains player 2's cat piece
-
-        char piece[CELL_WIDTH]; // One-line character array depicting a kitten piece, cat piece, or nothing
+        char piece[CELL_HEIGHT][CELL_WIDTH];
 };
 
 // A helper class containing attributes that a single player has in the "boop." game
@@ -94,8 +93,12 @@ class Player {
 // A derived class of Game class representing an entire round of the "boop." game
 class Boop: public main_savitch_14::Game {
     public:
+        char empty[CELL_HEIGHT][CELL_WIDTH];
+        char kitten[CELL_HEIGHT][CELL_WIDTH];
+        char cat[CELL_HEIGHT][CELL_WIDTH];
+
         // Boop constructor
-        Boop() {p1 = p2 = Player();}
+        Boop();
         
         // Method to compute the row index of the selected cell
         int get_row_idx(char row) const {return row - '1';}
