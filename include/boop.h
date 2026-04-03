@@ -19,6 +19,7 @@
 static const int SIZE = 6;
 static const int CELL_HEIGHT = 6;
 static const int CELL_WIDTH = CELL_HEIGHT * 2;
+
 static const int DIRS = 8;
 static int r_dirs[DIRS] = {-1, -1, -1, 0, 0, 1, 1, 1};
 static int c_dirs[DIRS] = {-1, 0, 1, -1, 1, -1, 0, 1};
@@ -31,9 +32,6 @@ class Cell{
 
         // Getter method for the state of the cell
         int get_state() const {return state;}
-
-        // Getter method to get the named location of the cell
-        std::string get_location() const {return location;}
         
         // Getter method to display either one of the players' kitten or cat piece depending on the cell's state
         void get_piece(int i) const;
@@ -41,14 +39,11 @@ class Cell{
         // Setter method to change the state of the cell
         void set_state(int val) {state = val;}
 
-        // Setter method to change the name of the location
-        void set_location(std::string name) {location = name;}
-
         // Setter method to change the cell's piece
         void set_piece(int state);
 
         // Overloaded method for the == operator to check the winning conditions
-        bool operator == (const Cell &obj) const;
+        bool operator == (const Cell &cell) const {return (state == 2 && cell.get_state() == 2) || (state == 4 && cell.get_state() == 4);}
 
     private:
         int state;              // Mutable state of the cell; There are 5 possible states a cell can have:
@@ -57,7 +52,7 @@ class Cell{
                                 // 2 - Contains player 1's cat piece
                                 // 3 - Contains player 2's kitten piece
                                 // 4 - Contains player 2's cat piece
-        std::string location;   // The named location of the cell        
+
         char piece[CELL_WIDTH]; // One-line character array depicting a kitten piece, cat piece, or nothing
 };
 
@@ -100,7 +95,7 @@ class Player {
 class Boop: public main_savitch_14::Game {
     public:
         // Boop constructor
-        Boop();
+        Boop() {p1 = p2 = Player();}
         
         // Method to compute the row index of the selected cell
         int get_row_idx(char row) const {return row - '1';}
@@ -109,7 +104,7 @@ class Boop: public main_savitch_14::Game {
         int get_col_idx(char col) const {return col - 'A';}
 
         // Helper method for the booping mechanism to check whether the board indices are in bound
-        bool is_inbound(int i, int j);
+        bool is_inbound(int i, int j) {return i >= 0 && i < SIZE && j >= 0 && j < SIZE;}
 
         // Helper method for make_move when a kitten piece boops ONLY its adjacent kitten pieces
         void boop_kpieces(int i, int j);

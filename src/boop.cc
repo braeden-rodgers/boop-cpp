@@ -19,8 +19,7 @@ using namespace main_savitch_14;
 // *******************************************************************
 
 Cell::Cell() {
-    state = 0; 
-    location = "N/A";
+    state = 0;
     fill(piece, piece + CELL_WIDTH, ' ');
 }
 
@@ -45,47 +44,17 @@ void Cell::get_piece(int i) const {
 }
 
 void Cell::set_piece(int state) {
-    if (state == 1 || state == 3)
-        // The cell's piece is set to a kitten piece
-        strcpy(piece, " (^o.o^*)/m ");
-    else if (state == 2 || state == 4)
-        // The cell's piece is set to a cat piece
-        strcpy(piece, "(=^0w0^=)==>");
-    else
-        fill(piece, piece + CELL_WIDTH, ' ');
-}
-
-bool Cell::operator == (const Cell& cell) const{
-    return (state == 2 && cell.get_state() == 2) || (state == 4 && cell.get_state() == 4);
+    // The cell contains no piece
+    if (state == 0) fill(piece, piece + CELL_WIDTH, ' ');
+    // The cell's piece is set to a kitten piece
+    else if (state % 2 != 0) strncpy(piece, " (^o.o^*)/m ", CELL_WIDTH);
+    // The cell's piece is set to a cat piece
+    else strncpy(piece, "(=^0w0^=)==>", CELL_WIDTH);
 }
 
 // *******************************************************************
 // BOOP CLASS
 // *******************************************************************
-
-Boop::Boop() {
-    p1 = p2 = Player();
-    char row_num = '1';
-    char col_letter = 'A';
-    
-    for (int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE; j++) {
-            Cell cell;
-            string location = string(1, col_letter) + row_num;
-            cell.set_location(location);
-            cell.set_state(0);
-            cell.set_piece(0);
-            board[i][j] = cell;
-            ++col_letter;
-        }
-        ++row_num;
-        col_letter = 'A';
-    }
-}
-
-bool Boop::is_inbound(int i, int j) {
-    return i >= 0 && i < SIZE && j >= 0 && j < SIZE;
-}
 
 void Boop::boop_kpieces(int i, int j) {
     // Scan for all valid moves to boop
@@ -107,15 +76,17 @@ void Boop::boop_kpieces(int i, int j) {
 
             // Check if a piece will fall off the game board
             if (!is_inbound(nr_idx, nc_idx)) {
+                // Update the kitten counter
                 if (adj_cell.get_state() == 1) p1.incr_kitten_pieces();
                 else if (adj_cell.get_state() == 3) p2.incr_kitten_pieces();
+
                 adj_cell.set_state(0);
                 adj_cell.set_piece(0);
                 board[r_idx][c_idx] = adj_cell;
                 board[nr_idx][nc_idx] = new_cell;
             }
-            else if ((board[nr_idx][nc_idx]).get_state() == 0) {
-                // Move the adjacment piece to the next cell in its direction
+            else if (new_cell.get_state() == 0) {
+                // Move the adjacent piece to the next cell in its direction
                 new_cell.set_state(adj_cell.get_state());
                 new_cell.set_piece(adj_cell.get_state());
                 adj_cell.set_state(0);
@@ -124,7 +95,7 @@ void Boop::boop_kpieces(int i, int j) {
                 board[nr_idx][nc_idx] = new_cell;
             }
             // If neither of the previous statements has been executed, a blocking has occured
-            // as there are two pieces in line with a placed piece
+            // as there are two pieces in line with the placed piece
         }
     }
 }
@@ -138,41 +109,7 @@ void Boop::boop_pieces(int i, int j) {
 }
 
 void Boop::graduate_pieces() {
-    // Search for any 3-piece row of same type
-    for (int i = 0; i < SIZE; i++) {
-        for (int j = 1; j < SIZE - 1; j++) {
-            Cell middle = board[i][j];
-            Cell left = board[i][j - 1];
-            Cell right = board[i][j + 1];
-        }
-    }
-
-    // Search for any 3-piece column of same type
-    for (int i = 1; i < SIZE - 1; i++) {
-        for (int j = 0; j < SIZE; j++) {
-            Cell middle = board[i][j];
-            Cell top = board[i - 1][j];
-            Cell bottom = board[i + 1][j];
-        }
-    }
-
-    // Search for any 3-piece rising diagonal of same type
-    for (int i = 1; i < SIZE - 1; i++) {
-        for (int j = 0; j < SIZE - 1; j++) {
-            Cell middle = board[i][j];
-            Cell l_bottom = board[i + 1][j - 1];
-            Cell r_top = board[i - 1][j + 1];
-        }
-    }
-
-    // Search for any 3-piece falling diagonal of same type
-    for (int i = 1; i < SIZE - 1; i++) {
-        for (int j = 0; j < SIZE - 1; j++) {
-            Cell middle = board[i][j];
-            Cell l_top = board[i - 1][j - 1];
-            Cell r_bottom = board[i + 1][j + 1];
-        }
-    }
+    return;
 }
 
 void Boop::make_move(const string& move) {
@@ -218,7 +155,7 @@ void Boop::make_move(const string& move) {
     else boop_pieces(r_idx, c_idx);
 
     // Graduate kitten pieces into cat pieces if necessary
-    // graduate_pieces();
+    graduate_pieces();
 
     Game::make_move(move);
 }
