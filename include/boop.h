@@ -102,7 +102,13 @@ class Boop: public main_savitch_14::Game {
         // Boop constructor
         Boop();
         
-        // ...
+        // Method to compute the row index of the selected cell
+        int get_row_idx(char row) const {return row - '1';}
+
+        // Method to compute the column index of the selected cell
+        int get_col_idx(char col) const {return col - 'A';}
+
+        // Helper method for the booping mechanism to check whether the board indices are in bound
         bool is_inbound(int i, int j);
 
         // Helper method for make_move when a kitten piece boops ONLY its adjacent kitten pieces
