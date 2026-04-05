@@ -23,7 +23,6 @@ Cell::Cell() {
     for (int i = 0; i < CELL_HEIGHT; i++) {
         strcpy(piece[i], "            ");
     }
-
 }
 
 void Cell::get_piece(int i, int j) const {
@@ -102,6 +101,7 @@ void Boop::boop_kpieces(int i, int j) {
                 if (adj_cell.get_state() == 1) p1.incr_kitten_pieces();
                 else if (adj_cell.get_state() == 3) p2.incr_kitten_pieces();
 
+                // Update the adjacent cell as a now empty cell 
                 adj_cell.set_state(0);
                 adj_cell.set_piece(empty);
 
@@ -113,6 +113,7 @@ void Boop::boop_kpieces(int i, int j) {
                 new_cell.set_state(adj_cell.get_state());
                 new_cell.set_piece(kitten);
 
+                // Update the adjacent cell as a now empty cell 
                 adj_cell.set_state(0);
                 adj_cell.set_piece(empty);
 
@@ -269,8 +270,20 @@ void Boop::display_status() const{
 }
 
 int Boop::evaluate() const {
-    // Implement code here
-    return 0;
+    int eval = 0;
+    int state;
+
+    // Evaluate each cell on the board
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            state = (board[i][j]).get_state();
+
+            if (state == 1 || state == 2) eval--;
+            else if (state == 3 || state == 4) eval++;
+        }   
+    }
+
+    return eval;    
 }
 
 bool Boop::is_game_over() const {
