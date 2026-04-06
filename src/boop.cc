@@ -192,37 +192,39 @@ void Boop::make_move(const string& move) {
     char col = move.at(0);
     int r_idx = get_row_idx(row);
     int c_idx = get_col_idx(col);
+    Cell sel_cell = board[r_idx][c_idx];
 
     if (next_mover() == HUMAN){
         // Set player 1's game piece
         if (!is_cat) {
-            (board[r_idx][c_idx]).set_state(1);
-            (board[r_idx][c_idx]).set_piece(kitten);
+            sel_cell.set_state(1);
+            sel_cell.set_piece(kitten);
             p1.decr_kitten_pieces();
         }
         else {
-            (board[r_idx][c_idx]).set_state(2);
-            (board[r_idx][c_idx]).set_piece(cat);
+            sel_cell.set_state(2);
+            sel_cell.set_piece(cat);
             p1.decr_cat_pieces();
         }
     }
     else {
         // Set player 2's game piece
         if (!is_cat) {
-            (board[r_idx][c_idx]).set_state(3);
-            (board[r_idx][c_idx]).set_piece(kitten);
+            sel_cell.set_state(3);
+            sel_cell.set_piece(kitten);
             p2.decr_kitten_pieces();
         }
         else {
-            (board[r_idx][c_idx]).set_state(4);
-            (board[r_idx][c_idx]).set_piece(cat);
+            sel_cell.set_state(4);
+            sel_cell.set_piece(cat);
             p2.decr_cat_pieces();
         }
     }
+    board[r_idx][c_idx] = sel_cell;
 
     // Boop!
-    if (!is_cat) boop_kpieces(r_idx, c_idx);
-    else boop_pieces(r_idx, c_idx);
+    if (!is_cat) boop_kpieces(r_idx, c_idx);    // Only move adjacent kitten pieces as a kitten
+    else boop_pieces(r_idx, c_idx);             // Move any adjacent pieces as a cat 
 
     // Graduate kitten pieces into cat pieces if necessary
     graduate_pieces();
