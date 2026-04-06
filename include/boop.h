@@ -113,7 +113,7 @@ class Boop: public main_savitch_14::Game {
         void boop_kpieces(int i, int j);
 
         // Helper method for make_move when a cat piece boops ALL its adjacent pieces
-        void boop_pieces(int i, int j);
+        void boop_pieces(int i, int j);        
 
         // Helper method for make_move to graduate kitten pieces into cat pieces
         void graduate_pieces();
@@ -133,7 +133,7 @@ class Boop: public main_savitch_14::Game {
         // *******************************************************************
 
         // Derived method that calls the copy constructor to make a copy of the current game
-	    main_savitch_14::Game* clone() const;
+	    main_savitch_14::Game* clone() const {return new Boop(*this);}
 
         // Derived method to compute all the moves that the next player can make
 		void compute_moves(std::queue<std::string>& moves) const;
