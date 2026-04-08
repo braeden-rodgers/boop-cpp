@@ -110,19 +110,17 @@ void Boop::boop_kpieces(int i, int j) {
 
                 board[r_idx][c_idx] = adj_cell;
             }
-            else if (new_cell.get_state() == 0) {
+            else if (new_cell.get_state() == 0 && adj_cell_state % 2 != 0) {
                 // Move the adjacent kitten piece to the next cell in its direction
-                if (adj_cell_state % 2 != 0) {
-                    new_cell.set_state(adj_cell_state);
-                    new_cell.set_piece(kitten);
+                new_cell.set_state(adj_cell_state);
+                new_cell.set_piece(kitten);
 
-                    // Update the adjacent cell as a now empty cell 
-                    adj_cell.set_state(0);
-                    adj_cell.set_piece(empty);
+                // Update the adjacent cell as a now empty cell 
+                adj_cell.set_state(0);
+                adj_cell.set_piece(empty);
 
-                    board[r_idx][c_idx] = adj_cell;
-                    board[nr_idx][nc_idx] = new_cell;
-                }
+                board[r_idx][c_idx] = adj_cell;
+                board[nr_idx][nc_idx] = new_cell;
             }
             // If neither of the previous statements has been executed, a blocking has occured
             // as there are two pieces in line with the placed piece
@@ -196,7 +194,6 @@ void Boop::graduate_pieces() {
 
 void Boop::make_move(const string& move) {
     bool is_cat = false;
-
     char row = move.at(1);
     char col = move.at(0);
     int r_idx = get_row_idx(row);
@@ -243,9 +240,7 @@ void Boop::make_move(const string& move) {
 
 void Boop::restart() {
     // Clear the game board
-    
     // Reset the players' game pieces
-
     Game::restart();
 }
 void Boop::compute_moves(queue<string>& moves) const{
@@ -321,18 +316,17 @@ void Boop::display_status() const{
 
 int Boop::evaluate() const {
     int eval = 0;
-    int state;
 
     // Evaluate each cell on the board
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            state = (board[i][j]).get_state();
+            int state = (board[i][j]).get_state();
 
-            if (state == 1 || state == 2) 
+            if (state == 1 || state == 2)
                 eval--;
-            else if (state == 3 || state == 4) 
+            else if (state == 3 || state == 4)
                 eval++;
-        }   
+        }
     }
 
     return eval;    
