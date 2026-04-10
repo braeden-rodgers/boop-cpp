@@ -50,6 +50,14 @@ void Cell::set_piece(char p[CELL_HEIGHT][CELL_WIDTH]) {
             piece[i][j] = p[i][j];
 }
 
+void Cell::update(int val, char p[CELL_HEIGHT][CELL_WIDTH]) {
+    state = val;
+    for (int i = 0; i < CELL_HEIGHT; i++)
+        for (int j = 0; j < CELL_WIDTH; j++)
+            piece[i][j] = p[i][j];
+}
+
+
 // *******************************************************************
 // BOOP CLASS
 // *******************************************************************
@@ -57,11 +65,11 @@ void Cell::set_piece(char p[CELL_HEIGHT][CELL_WIDTH]) {
 Boop::Boop() {
     p1 = p2 = Player();
 
-    for (int i = 0; i < CELL_HEIGHT; i++)
+    for (int i = 0; i < CELL_HEIGHT; i++)   // *Crickets*
         strcpy(empty[i], "            ");
 
     strcpy(kitten[0], "   /\\_/\\    ");
-    strcpy(kitten[1], "  ( o.o )   ");      // Meow!
+    strcpy(kitten[1], "  ( o.o )   ");      // Mew!
     strcpy(kitten[2], "   > ^ <    ");
     strcpy(kitten[3], "  /  -  \\   ");
     strcpy(kitten[4], " (  ---  )  ");
@@ -77,50 +85,42 @@ Boop::Boop() {
 
 void Boop::boop_kpieces(int i, int j) {
     // Scan for all valid moves to boop
-    for (int k = 0; k < DIRS; k++) {
+    for (int k = 0; k < BOOP_DIRS; k++) {
         // Form an index pair of the direction of an adjacent cell from the placed piece in the center cell
-        int r_idx = i + r_dirs[k];
-        int c_idx = j + c_dirs[k];
+        int r_idx = i + br_dirs[k];
+        int c_idx = j + bc_dirs[k];
 
         // Check whether or not the index pair is within the bounds of the game board
         if (!is_inbound(r_idx, c_idx)) 
             continue;
 
-        Cell adj_cell = board[r_idx][c_idx];
+        Cell& adj_cell = board[r_idx][c_idx];
         int adj_cell_state = adj_cell.get_state();
 
         // Check if there is a piece in the adjacent cell
         if (adj_cell_state != 0) {
             // Form an index pair of the cell the booped adjacent piece will move to
-            int nr_idx = r_idx + r_dirs[k];
-            int nc_idx = c_idx + c_dirs[k];
-            Cell new_cell = board[nr_idx][nc_idx];
+            int nr_idx = r_idx + br_dirs[k];
+            int nc_idx = c_idx + bc_dirs[k];
+            Cell& new_cell = board[nr_idx][nc_idx];
 
             // Check if a KITTEN piece will fall off the game board
             if (!is_inbound(nr_idx, nc_idx) && adj_cell_state % 2 != 0) {
                 // Update the kitten counter
                 if (adj_cell_state == 1) 
-                    p1.incr_kitten_pieces();
+                    p1.incr_kittens();
                 else if (adj_cell_state == 3) 
-                    p2.incr_kitten_pieces();
+                    p2.incr_kittens();
 
                 // Update the adjacent cell as a now empty cell 
-                adj_cell.set_state(0);
-                adj_cell.set_piece(empty);
-
-                board[r_idx][c_idx] = adj_cell;
+                adj_cell.update(0, empty);
             }
             else if (new_cell.get_state() == 0 && adj_cell_state % 2 != 0) {
                 // Move the adjacent kitten piece to the next cell in its direction
-                new_cell.set_state(adj_cell_state);
-                new_cell.set_piece(kitten);
+                new_cell.update(adj_cell_state, kitten);
 
                 // Update the adjacent cell as a now empty cell 
-                adj_cell.set_state(0);
-                adj_cell.set_piece(empty);
-
-                board[r_idx][c_idx] = adj_cell;
-                board[nr_idx][nc_idx] = new_cell;
+                adj_cell.update(0, empty);
             }
             // If neither of the previous statements has been executed, a blocking has occured
             // as there are two pieces in line with the placed piece
@@ -130,42 +130,39 @@ void Boop::boop_kpieces(int i, int j) {
 
 void Boop::boop_pieces(int i, int j) {    
     // Scan for all valid moves to boop
-    for (int k = 0; k < DIRS; k++) {
+    for (int k = 0; k < BOOP_DIRS; k++) {
         // Form an index pair of the direction of an adjacent cell from the placed piece in the center cell
-        int r_idx = i + r_dirs[k];
-        int c_idx = j + c_dirs[k];
+        int r_idx = i + br_dirs[k];
+        int c_idx = j + bc_dirs[k];
 
         // Check whether or not the index pair is within the bounds of the game board
         if (!is_inbound(r_idx, c_idx)) 
             continue;
 
-        Cell adj_cell = board[r_idx][c_idx];
+        Cell& adj_cell = board[r_idx][c_idx];
         int adj_cell_state = adj_cell.get_state();
 
         // Check if there is a piece in the adjacent cell
         if (adj_cell_state != 0) {
             // Form an index pair of the cell the booped adjacent piece will move to
-            int nr_idx = r_idx + r_dirs[k];
-            int nc_idx = c_idx + c_dirs[k];
-            Cell new_cell = board[nr_idx][nc_idx];
+            int nr_idx = r_idx + br_dirs[k];
+            int nc_idx = c_idx + bc_dirs[k];
+            Cell& new_cell = board[nr_idx][nc_idx];
 
             // Check if ANY piece will fall off the game board
             if (!is_inbound(nr_idx, nc_idx)) {
                 // Update the kitten counter
                 if (adj_cell_state == 1) 
-                    p1.incr_kitten_pieces();
+                    p1.incr_kittens();
                 else if (adj_cell_state == 2) 
-                    p1.incr_cat_pieces();
+                    p1.incr_cats();
                 else if (adj_cell_state == 3) 
-                    p2.incr_kitten_pieces();
+                    p2.incr_kittens();
                 else 
-                    p2.incr_cat_pieces();
+                    p2.incr_cats();
 
                 // Update the adjacent cell as a now empty cell 
-                adj_cell.set_state(0);
-                adj_cell.set_piece(empty);
-
-                board[r_idx][c_idx] = adj_cell;
+                adj_cell.update(0, empty);
             }
             else if (new_cell.get_state() == 0) {
                 // Move the adjacent piece to the next cell in its direction
@@ -176,11 +173,7 @@ void Boop::boop_pieces(int i, int j) {
                     new_cell.set_piece(cat);
 
                 // Update the adjacent cell as a now empty cell 
-                adj_cell.set_state(0);
-                adj_cell.set_piece(empty);
-
-                board[r_idx][c_idx] = adj_cell;
-                board[nr_idx][nc_idx] = new_cell;
+                adj_cell.update(0, empty);
             }
             // If neither of the previous statements has been executed, a blocking has occured
             // as there are two pieces in line with the placed piece
@@ -189,48 +182,76 @@ void Boop::boop_pieces(int i, int j) {
 }
 
 void Boop::graduate_pieces() {
-    return;
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            Cell& c1 = board[i][j];
+            int state = c1.get_state();
+
+            // Check if the current cell contains a kitten piece or not
+            if (state % 2 == 0)
+                continue;
+
+            for (int k = 0; k < GRAD_DIRS; k++) {
+                // Form two index pairs to find 3 kitten pieces in line of same type
+                int r_idx = i + gr_dirs[k];
+                int c_idx = j + gc_dirs[k];
+                int nr_idx = i + 2 * gr_dirs[k];
+                int nc_idx = j + 2 * gc_dirs[k];
+
+                // Check whether the last index pair is in bound of the game board
+                if (!is_inbound(nr_idx, nc_idx))
+                    continue;
+
+                Cell& c2 = board[r_idx][c_idx];
+                Cell& c3 = board[nr_idx][nc_idx];
+
+                // Check if all 3 pieces in line are matching
+                if (c2.get_state() == state && c3.get_state() == state) {
+                    Player& player = (state == 1) ? p1 : p2;
+
+                    // Remove the 3 matching kittens from the game board
+                    c1.update(0, empty);
+                    c2.update(0, empty);
+                    c3.update(0, empty);
+
+                    // Update the current player's pool
+                    player.add_cats(3);
+                }
+            }
+        }
+    }    
 }
 
 void Boop::make_move(const string& move) {
     bool is_cat = false;
+    bool human = (next_mover() == HUMAN);
+    int state = human ? 1 : 3;
+
+    // Get the selected cell of the board to manipulate it
     char row = move.at(1);
     char col = move.at(0);
     int r_idx = get_row_idx(row);
     int c_idx = get_col_idx(col);
-    Cell sel_cell = board[r_idx][c_idx];
+    Cell& sel_cell = board[r_idx][c_idx];
 
-    if (next_mover() == HUMAN){
-        // Set player 1's game piece
-        if (!is_cat) {
-            sel_cell.set_state(1);
-            sel_cell.set_piece(kitten);
-            p1.decr_kitten_pieces();
-        }
-        else {
-            sel_cell.set_state(2);
-            sel_cell.set_piece(cat);
-            p1.decr_cat_pieces();
-        }
-    }
-    else {
-        // Set player 2's game piece
-        if (!is_cat) {
-            sel_cell.set_state(3);
-            sel_cell.set_piece(kitten);
-            p2.decr_kitten_pieces();
-        }
-        else {
-            sel_cell.set_state(4);
-            sel_cell.set_piece(cat);
-            p2.decr_cat_pieces();
-        }
-    }
-    board[r_idx][c_idx] = sel_cell;
+    // Prompt if the player wants to use an active cat piece
+        // If yes --> is_cat = true
 
-    // Boop!
-    if (!is_cat) boop_kpieces(r_idx, c_idx);    // Only move adjacent kitten pieces as a kitten
-    else boop_pieces(r_idx, c_idx);             // Move any adjacent pieces as a cat 
+    if (!is_cat) {
+        // Set the current player's kitten piece
+        sel_cell.update(state, kitten);
+        (human ? p1 : p2).decr_kittens();
+
+        // Boop!
+        boop_kpieces(r_idx, c_idx);
+    } else {
+        // Set the current player's cat piece
+        sel_cell.update(state + 1, cat);
+        (human ? p1 : p2).decr_cats();
+
+        // Boop!
+        boop_pieces(r_idx, c_idx);
+    }
 
     // Graduate kitten pieces into cat pieces if necessary
     graduate_pieces();
@@ -252,6 +273,10 @@ void Boop::display_status() const{
     string spacing = "\t\t\t\t";
     string kpieces_str = "Kitten Pieces:";
     string cpieces_str = "Cat Pieces:";
+
+    cout << string(82, '=') << endl;
+    cout << string(82, '+') << endl;
+    cout << string(82, '=') << endl;
 
     // Display the entire game board
     cout << "    ";
@@ -283,10 +308,9 @@ void Boop::display_status() const{
 
             // Print the cell width
             for (int c = 0; c < SIZE; c++) {
-                for (int w = 0; w < CELL_WIDTH; w++) {
-                    // Print the piece
+                // Print the piece
+                for (int w = 0; w < CELL_WIDTH; w++)
                     (board[r][c]).get_piece(h, w);
-                }
                 cout << "|";
             }
             cout << endl;
@@ -307,10 +331,10 @@ void Boop::display_status() const{
     cout << BOLD << YELLOW << "\tPlayer 1's status:" << spacing 
          << BLUE << "Player 2's status:" << RESET << endl;
     cout << string(26, '-') << spacing << string(26, '-') << endl;
-    cout << YELLOW << "\t  " << kpieces_str << " " << RESET << p1.get_kitten_pieces()
-         << BLUE << spacing << kpieces_str << " " << RESET << p2.get_kitten_pieces() << endl;
-    cout << YELLOW << "\t     " << cpieces_str << " " <<  RESET << p1.get_cat_pieces()
-         << BLUE << spacing << cpieces_str << "    " << RESET << p2.get_cat_pieces() << endl;
+    cout << YELLOW << "\t  " << kpieces_str << " " << RESET << p1.get_kittens()
+         << BLUE << spacing << kpieces_str << " " << RESET << p2.get_kittens() << endl;
+    cout << YELLOW << "\t     " << cpieces_str << " " <<  RESET << p1.get_cats()
+         << BLUE << spacing << cpieces_str << "    " << RESET << p2.get_cats() << endl;
     cout << endl;
 }
 
@@ -341,7 +365,7 @@ bool Boop::is_game_over() const {
             Cell right = board[i][j + 1];
 
             // Winning row condition is met
-            if (middle == left && middle == right) 
+            if (left == middle && right == middle) 
                 return true;
         }
     }
@@ -354,7 +378,7 @@ bool Boop::is_game_over() const {
             Cell bottom = board[i + 1][j];
 
             // Winning column condition is met
-            if (middle == top && middle == bottom) 
+            if (top == middle && bottom == middle) 
                 return true;
         }
     }
@@ -367,7 +391,7 @@ bool Boop::is_game_over() const {
             Cell r_top = board[i - 1][j + 1];
 
             // Winning diagonal condition is met
-            if (middle == l_bottom && middle == r_top) 
+            if (l_bottom == middle && r_top == middle) 
                 return true;
         }
     }
@@ -380,7 +404,7 @@ bool Boop::is_game_over() const {
             Cell r_bottom = board[i + 1][j + 1];
             
             // Winning diagonal condition is met
-            if (middle == l_top && middle == r_bottom) 
+            if (l_top == middle && r_bottom == middle) 
                 return true;
         }
     }
@@ -406,7 +430,7 @@ bool Boop::is_legal(const string& move) const {
     int c_idx = get_col_idx(col);
 
     // Verify that the selected cell is empty
-    if (board[r_idx][c_idx].get_state() == 0) 
+    if ((board[r_idx][c_idx]).get_state() == 0) 
         return true;
 
     return false;
