@@ -224,8 +224,9 @@ void Boop::graduate_pieces() {
 
 void Boop::make_move(const string& move) {
     bool is_cat = false;
-    bool human = (next_mover() == HUMAN);
+    bool human = next_mover() == HUMAN;
     int state = human ? 1 : 3;
+    Player& player = human ? p1 : p2;
 
     // Get the selected cell of the board to manipulate it
     char row = move.at(1);
@@ -234,20 +235,27 @@ void Boop::make_move(const string& move) {
     int c_idx = get_col_idx(col);
     Cell& sel_cell = board[r_idx][c_idx];
 
-    // Prompt if the player wants to use an active cat piece
-        // If yes --> is_cat = true
+    if (player.get_cats() > 0) {
+        string ans;
+        
+        cout << "You have a cat piece available. Would you like to use one? (Y/N): ";
+        getline(cin, ans);
+
+        if (ans == "Y" || ans == "YES" || ans == "y" || ans == "yes")
+            is_cat = true;
+    }
 
     if (!is_cat) {
         // Set the current player's kitten piece
         sel_cell.update(state, kitten);
-        (human ? p1 : p2).decr_kittens();
+        player.decr_kittens();
 
         // Boop!
         boop_kpieces(r_idx, c_idx);
     } else {
         // Set the current player's cat piece
         sel_cell.update(state + 1, cat);
-        (human ? p1 : p2).decr_cats();
+        player.decr_cats();
 
         // Boop!
         boop_pieces(r_idx, c_idx);
@@ -273,10 +281,12 @@ void Boop::display_status() const{
     string spacing = "\t\t\t\t";
     string kpieces_str = "Kitten Pieces:";
     string cpieces_str = "Cat Pieces:";
+    string eql_str = string(82, '=');
+    string plus_str = string(82, '+');
 
-    cout << string(82, '=') << endl;
-    cout << string(82, '+') << endl;
-    cout << string(82, '=') << endl;
+    cout << endl << eql_str << endl;
+    cout << plus_str << endl;
+    cout << eql_str << endl << endl;
 
     // Display the entire game board
     cout << "    ";
