@@ -228,11 +228,19 @@ void Boop::make_move(const string& move) {
     if (player.get_cats() > 0) {
         string ans;
         
-        cout << "You have a cat piece available. Would you like to use one? (Y/N): ";
-        getline(cin, ans);
+        cout << "You have " << player.get_cats() << " piece(s) available. Would you like to use one?" << endl;
+        while (true) {
+            cout << "Y/N: ";
+            getline(cin, ans);
+            transform(ans.begin(), ans.end(), ans.begin(), ::toupper);
 
-        if (ans == "Y" || ans == "YES" || ans == "y" || ans == "yes")
-            is_cat = true;
+            if (ans == "Y" || ans == "YES") {
+                is_cat = true;
+                break;
+            }
+            else if (ans == "N" || ans == "NO")
+                break;
+        }
     }
 
     if (!is_cat) {
