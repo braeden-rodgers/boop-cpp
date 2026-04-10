@@ -49,7 +49,7 @@ class Cell{
         // Setter method to change the cell's piece
         void set_piece(char p[CELL_HEIGHT][CELL_WIDTH]);
 
-        // 2-in-1 Method to update both data members
+        // Method to update both data members
         void update(int val, char p[CELL_HEIGHT][CELL_WIDTH]);
 
         // Overloaded method for the == operator to check the winning conditions

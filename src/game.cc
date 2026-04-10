@@ -42,7 +42,7 @@ namespace main_savitch_14 {
 		getline(cin, move);
 
 		// Case sensitivity is automatically handled
-    	move[0] = (char)toupper(move[0]);
+    	// move[0] = (char)toupper(move[0]);
 		return move;
     }
 

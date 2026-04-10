@@ -230,7 +230,7 @@ void Boop::make_move(const string& move) {
 
     // Get the selected cell of the board to manipulate it
     char row = move.at(1);
-    char col = move.at(0);
+    char col = (char)toupper(move[0]);
     int r_idx = get_row_idx(row);
     int c_idx = get_col_idx(col);
     Cell& sel_cell = board[r_idx][c_idx];
@@ -278,11 +278,11 @@ void Boop::compute_moves(queue<string>& moves) const{
 }
 
 void Boop::display_status() const{
+    string eql_str = string(82, '=');
+    string plus_str = string(82, '+');
     string spacing = "\t\t\t\t";
     string kpieces_str = "Kitten Pieces:";
     string cpieces_str = "Cat Pieces:";
-    string eql_str = string(82, '=');
-    string plus_str = string(82, '+');
 
     cout << endl << eql_str << endl;
     cout << plus_str << endl;
@@ -426,9 +426,9 @@ bool Boop::is_legal(const string& move) const {
     // Verify the length of the move string
     if (move.length() != 2) 
         return false;
-
+    
     char row = move.at(1);
-    char col = move.at(0);
+    char col = (char)toupper(move[0]);
 
     // Verify the row number and column letter
     if (row < '1' || row >= '1' + SIZE) 
