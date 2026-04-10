@@ -26,10 +26,10 @@ static const int BOOP_DIRS = 8;
 static const int br_dirs[BOOP_DIRS] = {-1, -1, -1, 0, 0, 1, 1, 1};
 static const int bc_dirs[BOOP_DIRS] = {-1, 0, 1, -1, 1, -1, 0, 1};
 
-// Varaibles for the kitten graduation mechanism
-static const int GRAD_DIRS = 4;
-static const int gr_dirs[GRAD_DIRS] = {0, 1, 1, 1};
-static const int gc_dirs[GRAD_DIRS] = {1, 0, 1, -1};
+// Varaibles for the kitten graduation mechanism and checking winning conditions
+static const int DIRS = 4;
+static const int r_dirs[DIRS] = {0, 1, 1, 1};
+static const int c_dirs[DIRS] = {1, 0, 1, -1};
 
 // A helper class for Boop class representing a single cell within the game board
 class Cell{
@@ -51,9 +51,6 @@ class Cell{
 
         // Method to update both data members
         void update(int val, char p[CELL_HEIGHT][CELL_WIDTH]);
-
-        // Overloaded method for the == operator to check the winning conditions
-        bool operator == (const Cell& cell) const {return (state == 2 && cell.get_state() == 2) || (state == 4 && cell.get_state() == 4);}
 
     private:
         int state;              // Mutable state of the cell; There are 5 possible states a cell can have:
@@ -116,16 +113,19 @@ class Boop: public main_savitch_14::Game {
         int get_col_idx(char col) const {return col - 'A';}
 
         // Helper method for the booping mechanism to check whether the board indices are in bound
-        bool is_inbound(int i, int j) {return i >= 0 && i < SIZE && j >= 0 && j < SIZE;}
+        bool is_inbounds(int i, int j) const {return i >= 0 && i < SIZE && j >= 0 && j < SIZE;}
 
-        // Helper method for make_move when a kitten piece boops ONLY its adjacent kitten pieces
-        void boop_kpieces(int i, int j);
+        // Helper method for boop method when a kitten piece boops ONLY its adjacent kitten pieces
+        void boop_kpieces(int i, int j, Cell& src, Cell& dst);
 
-        // Helper method for make_move when a cat piece boops ALL its adjacent pieces
-        void boop_pieces(int i, int j);        
+        // Helper method for boop method when a cat piece boops ALL its adjacent pieces
+        void boop_pieces(int i, int j, Cell& src, Cell& dst);  
 
-        // Helper method for make_move to graduate kitten pieces into cat pieces
-        void graduate_pieces();
+        // Helper method for make_move method to boop the adjacent pieces
+        void boop(int i, int j, bool is_cat);
+
+        // Helper method for make_move method to graduate kitten pieces into cat pieces
+        void graduate();
 
         // *******************************************************************
         // OVERRIDDEN VIRTUAL METHODS
