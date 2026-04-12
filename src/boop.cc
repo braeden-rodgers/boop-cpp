@@ -336,6 +336,12 @@ int Boop::evaluate() const {
 }
 
 bool Boop::is_game_over() const {
+    Player player = (next_mover() == HUMAN) ? p1 : p2;
+
+    // Check if the current player wins by having all 8 of their cat pieces on the board at the end of a turn
+    if (player.get_kittens() == 0 && player.get_cats() == 0)
+        return true;
+    
     // Scan through the entire board to find 3 matching cat pieces in line
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
