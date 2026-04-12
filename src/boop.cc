@@ -5,6 +5,7 @@
  * 
  */
 
+#include <array>        // Provides array<string, N>
 #include <iostream>     // Provides cin, cout
 #include <queue>        // Provides queue<string>
 #include <string>       // Provides string
@@ -14,73 +15,32 @@
 using namespace std;
 using namespace main_savitch_14;
 
-// *******************************************************************
-// CELL CLASS
-// *******************************************************************
-
-Cell::Cell() {
-    state = 0;
-    for (int i = 0; i < CELL_HEIGHT; i++) 
-        strcpy(piece[i], "            ");
-}
-
-void Cell::get_piece(int i, int j) const {
-    switch (state) {
-        case 0:
-            cout << piece[i][j];
-            break;
-        case 1:
-            cout << YELLOW << piece[i][j] << RESET;
-            break;
-        case 2:
-            cout << H_YELLOW << piece[i][j] << RESET;
-            break;
-        case 3:
-            cout << BLUE << piece[i][j] << RESET;
-            break;
-        case 4:
-            cout << H_BLUE << piece[i][j] << RESET; 
-            break;
-    }
-}
-
-void Cell::set_piece(char p[CELL_HEIGHT][CELL_WIDTH]) {
-    for (int i = 0; i < CELL_HEIGHT; i++)
-        for (int j = 0; j < CELL_WIDTH; j++)
-            piece[i][j] = p[i][j];
-}
-
-void Cell::update(int val, char p[CELL_HEIGHT][CELL_WIDTH]) {
-    state = val;
-    for (int i = 0; i < CELL_HEIGHT; i++)
-        for (int j = 0; j < CELL_WIDTH; j++)
-            piece[i][j] = p[i][j];
-}
-
-
-// *******************************************************************
-// BOOP CLASS
-// *******************************************************************
-
 Boop::Boop() {
+    for (int i = 0; i < SIZE; i++) 
+        for (int j = 0; j < SIZE; j++)
+            board[i][j] = Cell();
+
     p1 = p2 = Player();
 
-    for (int i = 0; i < CELL_HEIGHT; i++)
-        strcpy(empty[i], "            ");   // *Crickets*
+    empty.fill(string(12, ' '));
 
-    strcpy(kitten[0], "   /\\_/\\    ");
-    strcpy(kitten[1], "  ( o.o )   ");      // Mew!
-    strcpy(kitten[2], "   > ^ <    ");
-    strcpy(kitten[3], "  /  -  \\   ");
-    strcpy(kitten[4], " (  ---  )  ");
-    strcpy(kitten[5], "   -----    ");
+    kitten = {
+        "   /\\_/\\    ",
+        "  ( o.o )   ",     // Mew!
+        "   > ^ <    ",
+        "  /  -  \\   ",
+        " (  ---  )  ",
+        "   -----    "
+    };
 
-    strcpy(cat[0], "  /\\____/\\  ");
-    strcpy(cat[1], " (  o  o  ) ");         // Meow!
-    strcpy(cat[2], " (   --   ) ");
-    strcpy(cat[3], "  \\  __  /  ");
-    strcpy(cat[4], "   \\____/   ");
-    strcpy(cat[5], "    ----    ");
+    cat = {
+        "  /\\____/\\  ",
+        " (  o  o  ) ",     // Meow!
+        " (   --   ) ",
+        "  \\  __  /  ",
+        "   \\____/   ",
+        "    ----    "
+    };
 }
 
 void Boop::boop_kpieces(int i, int j, Cell& src, Cell& dst) {
@@ -225,30 +185,34 @@ void Boop::make_move(const string& move) {
     int c_idx = get_col_idx(col);
     Cell& sel_cell = board[r_idx][c_idx];
 
+    // Allow the current player to place a cat piece
     if (player.get_cats() > 0) {
-        string ans;
-        
-        cout << "You have " << player.get_cats() << " piece(s) available. Would you like to use one?" << endl;
-        while (true) {
-            cout << "Y/N: ";
-            getline(cin, ans);
-            transform(ans.begin(), ans.end(), ans.begin(), ::toupper);
+        if (player.get_kittens() == 0)
+            is_cat = true;
+        else {
+            string ans;
+            
+            cout << "You have " << player.get_cats() << " piece(s) available. Would you like to use one?" << endl << RESET;
+            while (true) {
+                cout << "Y/N: ";
+                getline(cin, ans);
+                transform(ans.begin(), ans.end(), ans.begin(), ::toupper);
 
-            if (ans == "Y" || ans == "YES") {
-                is_cat = true;
-                break;
+                if (ans == "Y" || ans == "YES") {
+                    is_cat = true;
+                    break;
+                }
+                else if (ans == "N" || ans == "NO")
+                    break;
             }
-            else if (ans == "N" || ans == "NO")
-                break;
         }
     }
 
+    // Set the current player's piece on the board
     if (!is_cat) {
-        // Set the current player's kitten piece
         sel_cell.update(state, kitten);
         player.decr_kittens();
     } else {
-        // Set the current player's cat piece
         sel_cell.update(state + 1, cat);
         player.decr_cats();
     }
@@ -263,8 +227,8 @@ void Boop::make_move(const string& move) {
 }
 
 void Boop::restart() {
-    // Clear the game board
-    // Reset the players' game pieces
+    // Implement code here
+
     Game::restart();
 }
 void Boop::compute_moves(queue<string>& moves) const{
@@ -315,8 +279,17 @@ void Boop::display_status() const{
             // Print the cell width
             for (int c = 0; c < SIZE; c++) {
                 // Print the piece
-                for (int w = 0; w < CELL_WIDTH; w++)
-                    (board[r][c]).get_piece(h, w);
+                for (int w = 0; w < CELL_WIDTH; w++) {
+                    int state = (board[r][c]).get_state();
+                    char piece = (board[r][c]).get_piece(h, w);
+
+                    if (state == 1 || state == 2)
+                        cout << YELLOW << piece << RESET;
+                    else if (state == 3 || state == 4) 
+                        cout << BLUE << piece << RESET;
+                    else
+                        cout << piece;
+                }
                 cout << "|";
             }
             cout << endl;

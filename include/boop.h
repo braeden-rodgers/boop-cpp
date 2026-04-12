@@ -12,6 +12,7 @@
 #ifndef BOOP_H
 #define BOOP_H
 
+#include <array>    // Provides array<string, N>
 #include <queue>    // Provides queue<string>
 #include <string>   // Provides string
 #include "game.h"   // Provides Game class
@@ -35,38 +36,38 @@ static const int c_dirs[DIRS] = {1, 0, 1, -1};
 class Cell{
     public:
         // Cell constructor
-        Cell();
+        Cell() : state(0) {piece.fill(std::string(12, ' '));}
 
         // Getter method for the state of the cell
         int get_state() const {return state;}
         
         // Getter method to display either one of the players' kitten or cat piece depending on the cell's state
-        void get_piece(int i, int j) const;
+        char get_piece(int i, int j) const {return piece[i][j];}
 
         // Setter method to change the state of the cell
         void set_state(int val) {state = val;}
 
         // Setter method to change the cell's piece
-        void set_piece(char p[CELL_HEIGHT][CELL_WIDTH]);
+        void set_piece(std::array<std::string, CELL_WIDTH> p) {piece = p;}
 
         // Method to update both data members
-        void update(int val, char p[CELL_HEIGHT][CELL_WIDTH]);
+        void update(int val, std::array<std::string, CELL_WIDTH> p) {state = val; piece = p;}
 
     private:
-        int state;              // Mutable state of the cell; There are 5 possible states a cell can have:
-                                // 0 - Empty cell
-                                // 1 - Contains player 1's kitten piece
-                                // 2 - Contains player 1's cat piece
-                                // 3 - Contains player 2's kitten piece
-                                // 4 - Contains player 2's cat piece
-        char piece[CELL_HEIGHT][CELL_WIDTH];
+        int state;                                  // Mutable state of the cell
+                                                    // 0 - Empty cell
+                                                    // 1 - Contains player 1's kitten piece
+                                                    // 2 - Contains player 1's cat piece
+                                                    // 3 - Contains player 2's kitten piece
+                                                    // 4 - Contains player 2's cat piece
+        std::array<std::string, CELL_WIDTH> piece;  // The cell's piece depending on the state
 };
 
 // A helper class containing attributes that a single player has in the "boop." game
 class Player {
     public:
         // Player constructor
-        Player() {kittens = 8; cats = 0;}
+        Player() : kittens(8), cats(0) {}
 
         // Getter method for the player's kitten pieces
         int get_kittens() const {return kittens;}
@@ -105,7 +106,10 @@ class Boop: public main_savitch_14::Game {
     public:
         // Boop constructor
         Boop();
-        
+
+        // Boop deconstructor
+        ~Boop() {}
+
         // Method to compute the row index of the selected cell
         int get_row_idx(char row) const {return row - '1';}
 
@@ -159,13 +163,13 @@ class Boop: public main_savitch_14::Game {
         // Derived method to determine whether or not the given move is legal for the next player
 		bool is_legal(const std::string& move) const;
 
-    private:
-        char empty[CELL_HEIGHT][CELL_WIDTH];    // 2-D empty array
-        char kitten[CELL_HEIGHT][CELL_WIDTH];   // 2-D array of kitten text art
-        char cat[CELL_HEIGHT][CELL_WIDTH];      // 2-D array of cat text art
-        Cell board[SIZE][SIZE];                 // 2-D array of Cell objects as the 6x6 game board
-        Player p1;                              // Player 1 with their kitten and cat pieces
-        Player p2;                              // Player 2 with their kitten and cat pieces
+    private:        
+        std::array<std::string, CELL_WIDTH> empty;  // Empty array
+        std::array<std::string, CELL_WIDTH> kitten; // Array containing kitten text art
+        std::array<std::string, CELL_WIDTH> cat;    // Array containing cat text art
+        Cell board[SIZE][SIZE];                     // 2-D array of Cell objects as the 6x6 game board
+        Player p1;                                  // Player 1 with their kitten and cat pieces
+        Player p2;                                  // Player 2 with their kitten and cat pieces
 };
 
 #endif  // BOOP_H
