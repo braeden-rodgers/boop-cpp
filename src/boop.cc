@@ -22,7 +22,7 @@ Boop::Boop() {
 
     p1 = p2 = Player();
 
-    empty.fill(string(12, ' '));
+    empty.fill(string(CELL_WIDTH, ' '));
 
     kitten = {
         "   /\\_/\\    ",

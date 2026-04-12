@@ -36,7 +36,7 @@ static const int c_dirs[DIRS] = {1, 0, 1, -1};
 class Cell{
     public:
         // Cell constructor
-        Cell() : state(0) {piece.fill(std::string(12, ' '));}
+        Cell() : state(0) {piece.fill(std::string(CELL_WIDTH, ' '));}
 
         // Getter method for the state of the cell
         int get_state() const {return state;}
@@ -48,19 +48,19 @@ class Cell{
         void set_state(int val) {state = val;}
 
         // Setter method to change the cell's piece
-        void set_piece(std::array<std::string, CELL_WIDTH> p) {piece = p;}
+        void set_piece(std::array<std::string, CELL_HEIGHT> p) {piece = p;}
 
         // Method to update both data members
-        void update(int val, std::array<std::string, CELL_WIDTH> p) {state = val; piece = p;}
+        void update(int val, std::array<std::string, CELL_HEIGHT> p) {state = val; piece = p;}
 
     private:
-        int state;                                  // Mutable state of the cell
+        int state;                                  // Mutable state of the cell:
                                                     // 0 - Empty cell
                                                     // 1 - Contains player 1's kitten piece
                                                     // 2 - Contains player 1's cat piece
                                                     // 3 - Contains player 2's kitten piece
                                                     // 4 - Contains player 2's cat piece
-        std::array<std::string, CELL_WIDTH> piece;  // The cell's piece depending on the state
+        std::array<std::string, CELL_HEIGHT> piece; // The cell's piece depending on the state
 };
 
 // A helper class containing attributes that a single player has in the "boop." game
@@ -97,8 +97,8 @@ class Player {
         void add_cats(int val) {cats += val;}
 
     private:
-        int kittens;  // The player's kitten pieces
-        int cats;     // The player's cat pieces
+        int kittens;  // The player's active kitten pieces
+        int cats;     // The player's active cat pieces
 };
 
 // A derived class of Game class representing an entire round of the "boop." game
@@ -164,12 +164,12 @@ class Boop: public main_savitch_14::Game {
 		bool is_legal(const std::string& move) const;
 
     private:        
-        std::array<std::string, CELL_WIDTH> empty;  // Empty array
-        std::array<std::string, CELL_WIDTH> kitten; // Array containing kitten text art
-        std::array<std::string, CELL_WIDTH> cat;    // Array containing cat text art
-        Cell board[SIZE][SIZE];                     // 2-D array of Cell objects as the 6x6 game board
-        Player p1;                                  // Player 1 with their kitten and cat pieces
-        Player p2;                                  // Player 2 with their kitten and cat pieces
+        std::array<std::string, CELL_HEIGHT> empty;     // Empty array
+        std::array<std::string, CELL_HEIGHT> kitten;    // Array containing kitten text art
+        std::array<std::string, CELL_HEIGHT> cat;       // Array containing cat text art
+        Cell board[SIZE][SIZE];                         // 2-D array of Cell objects as the 6x6 game board
+        Player p1;                                      // Player 1 with their kitten and cat pieces
+        Player p2;                                      // Player 2 with their kitten and cat pieces
 };
 
 #endif  // BOOP_H
