@@ -114,21 +114,21 @@ void Boop::boop(int i, int j, bool is_cat) {
         if (!is_in_bounds(r1_idx, c1_idx)) 
             continue;
 
-        Cell& adj_cell = board[r1_idx][c1_idx];
-        int adj_cell_state = adj_cell.get_state();
+        Cell& adjacent = board[r1_idx][c1_idx];
+        int adj_state = adjacent.get_state();
 
         // Check if there is a piece in the adjacent cell
-        if (adj_cell_state != 0) {
+        if (adj_state != 0) {
             // Form an index pair of the cell the booped adjacent piece will move to
             int r2_idx = r1_idx + br_dirs[k];
             int c2_idx = c1_idx + bc_dirs[k];
-            Cell& new_cell = board[r2_idx][c2_idx];
+            Cell& next = board[r2_idx][c2_idx];
 
             // Perform the rest of the booping system depending on the type of the placed piece
             if (!is_cat)
-                boop_kitten(r2_idx, c2_idx, adj_cell_state, adj_cell, new_cell);
+                boop_kitten(r2_idx, c2_idx, adj_state, adjacent, next);
             else
-                boop_piece(r2_idx, c2_idx, adj_cell_state, adj_cell, new_cell);
+                boop_piece(r2_idx, c2_idx, adj_state, adjacent, next);
         }
     }
 }
@@ -150,14 +150,14 @@ bool Boop::validate_selection(string move, Player& player) {
     int r_idx = get_row_idx(row);
     int c_idx = get_col_idx(col);
     bool is_human = (next_mover() == HUMAN) ? true : false;
-    Cell& sel_cell = board[r_idx][c_idx];
+    Cell& selected = board[r_idx][c_idx];
 
     // Check if the current player tries to select an invalid cell to graduate a kitten
-    if ((is_human && sel_cell.get_state() != 1) || (!is_human && sel_cell.get_state() != 3))
+    if ((is_human && selected.get_state() != 1) || (!is_human && selected.get_state() != 3))
         return false;
 
     // Update the selected cell as an empty cell and graduate its kitten into a cat
-    sel_cell.update(0, empty);
+    selected.update(0, empty);
     player.incr_cats();
 
     return true;
@@ -166,7 +166,7 @@ bool Boop::validate_selection(string move, Player& player) {
 void Boop::select_kitten(Player& player) {
     string move;
 
-    cout << "Select one kitten to graduate into a cat." << endl;;
+    cout << MENU << "Select one kitten to graduate into a cat." << RESET << endl;
     move = get_user_move();
 
     // Verify the selected move before graduating a kitten
@@ -182,7 +182,7 @@ Graduation Boop::select_graduation(const vector<Graduation> groups) {
     int choice;
     string ans;
 
-    cout << "Select one of the following groups of pieces to graduate into cats:" << endl;
+    cout << MENU << "Select one of the following groups of pieces to graduate into cats:" << RESET << endl;
 
     // Display all options
     for (auto& group : groups) {
@@ -294,22 +294,32 @@ void Boop::graduate(Player& player) {
         
         // Check for the rare case of having a 3-in-a-row AND 8 kitten pieces on the board
         if (can_graduate) {
+            int choice;
             string ans;
-            cout << "Select one of the following options to activate:" << endl;
-            cout << "\t1.) Graduate a 3-in-a-row" << endl;
-            cout << "\t2.) Select one kitten on the board to graduate into a cat" << endl;
 
-            while (ans != "1" || ans != "2") {
-                cout << "(1/2): ";
+            cout << MENU << "Select one of the following options to activate:" << RESET << endl;
+            cout << "1.) Graduate a 3-in-a-row" << endl;
+            cout << "2.) Select one kitten on the board to graduate into a cat" << endl << endl;
+
+            while (true) {        
+                cout << "Enter your choice: ";
                 getline(cin, ans);
+
+                try {
+                    choice = stoi(ans);
+                    if (choice > 0 && choice <= 2)
+                        break;
+                }
+                catch (...) {}
+
+                cout << RED << "Invalid choice." << RESET << endl;
             }
 
             // If the current player selects the second option, allow them to graduate one kitten
-            if (ans == "2") {
+            if (choice == 2) {
                 select_kitten(player);
                 return;
             }
-
         }
         else {
             select_kitten(player);
@@ -322,9 +332,9 @@ void Boop::graduate(Player& player) {
         display_status();
 
         // Choose which group of 3 pieces to graduate
-        Graduation sel_group = select_graduation(groups);
+        Graduation selected = select_graduation(groups);
         groups.clear();
-        groups.push_back(sel_group);
+        groups.push_back(selected);
     }
 
     // Perform kitten graduation
@@ -366,7 +376,7 @@ void Boop::make_move(const string& move) {
     char col = (char)toupper(move[0]);
     int r_idx = get_row_idx(row);
     int c_idx = get_col_idx(col);
-    Cell& sel_cell = board[r_idx][c_idx];
+    Cell& selected = board[r_idx][c_idx];
 
     // Allow the current player to place a cat piece
     if (player.get_cats() > 0) {
@@ -394,10 +404,10 @@ void Boop::make_move(const string& move) {
 
     // Set the current player's piece on the board
     if (!is_cat) {
-        sel_cell.update(state, kitten);
+        selected.update(state, kitten);
         player.decr_kittens();
     } else {
-        sel_cell.update(state + 1, cat);
+        selected.update(state + 1, cat);
         player.decr_cats();
     }
 
