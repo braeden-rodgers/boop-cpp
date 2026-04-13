@@ -15,6 +15,7 @@
 #include <array>    // Provides array<string, N>
 #include <queue>    // Provides queue<string>
 #include <string>   // Provides string
+#include <vector>   // Provides vector<pair<int, int>>
 #include "game.h"   // Provides Game class
 
 // Variables for the game board display
@@ -31,6 +32,14 @@ static const int bc_dirs[BOOP_DIRS] = {-1, 0, 1, -1, 1, -1, 0, 1};
 static const int DIRS = 4;
 static const int r_dirs[DIRS] = {0, 1, 1, 1};
 static const int c_dirs[DIRS] = {1, 0, 1, -1};
+
+// A structure for handling rare cases when performing kitten graduation
+struct Graduation {
+    std::vector<std::pair<int, int>> cells; // Vector of cells as pairs of indices within the game board
+    int owner;                              // Player 1 (0) or Player 2 (1)
+    bool all_kittens;                       // Boolean value if all pieces are kittens
+    bool is_mixed;                          // Boolean value if the pieces are a combination of kittens and cats
+};
 
 // A helper class for Boop class representing a single cell within the game board
 class Cell{
@@ -110,34 +119,58 @@ class Boop: public main_savitch_14::Game {
         // Boop deconstructor
         ~Boop() {}
 
+        // *******************************************************************
+        // HELPER METHODS
+        // *******************************************************************
+        
+        // Method to compute the row number of the selected cell
+        char get_row(int idx) const {return idx + '1';}
+
+        // Method to compute the column letter of the selected cell
+        char get_col(int idx) const {return idx + 'A';}
+
         // Method to compute the row index of the selected cell
         int get_row_idx(char row) const {return row - '1';}
 
         // Method to compute the column index of the selected cell
         int get_col_idx(char col) const {return col - 'A';}
 
-        // Method to check if the current player has all 8 kitten or cat pieces on the board
-        bool has_all_pieces(int state) const;
-
         // Method to check whether the board indices are in bounds of the board
         bool is_in_bounds(int i, int j) const {return i >= 0 && i < SIZE && j >= 0 && j < SIZE;}
 
-        // Helper method for boop method when a kitten piece boops ONLY its adjacent kitten pieces
-        void boop_kittens(int i, int j, Cell& src, Cell& dst);
+        // Method to check if the current player has all 8 kitten or cat pieces on the board
+        bool has_all_pieces(int state) const;
 
-        // Helper method for boop method when a cat piece boops ALL its adjacent pieces
-        void boop_pieces(int i, int j, Cell& src, Cell& dst);  
+        // *******************************************************************
+        // BOOPING METHODS
+        // *******************************************************************
 
-        // Helper method for make_move method to boop the adjacent pieces
+        // Method for when a kitten piece boops ONLY its adjacent kitten pieces
+        void boop_kitten(int i, int j, int src_state, Cell& src, Cell& dst);
+
+        // Method for when a cat piece boops ALL its adjacent pieces
+        void boop_piece(int i, int j, int src_state, Cell& src, Cell& dst);  
+
+        // Method to boop the adjacent pieces upon placing a piece
         void boop(int i, int j, bool is_cat);
 
-        // Helper method graudate for select_to_graduate to verify the player's selection
-        bool can_graduate(std::string move, Player& player);
+        // *******************************************************************
+        // GRADUATION METHODS
+        // *******************************************************************
 
-        // Helper method for graduate method to let the current player choose a kitten to graduate into a cat
-        void select_to_graduate(Player& player);
+        // Method to find all groups of 3 pieces on the game board that can be graduated into cats
+        void find_graduations(std::vector<Graduation>& groups);
 
-        // Helper method for make_move method to graduate kitten pieces into cat pieces
+        // Method to verify the player's selection of kitten to graduate
+        bool validate_selection(std::string move, Player& player);
+
+        // Method to let the current player choose a kitten to graduate into a cat
+        void select_kitten(Player& player);
+
+        // Method to allow the current player to select one group of pieces to graduate
+        Graduation select_graduation(std::vector<Graduation> groups);
+
+        // Method to graduate kitten pieces into cat pieces after booping
         void graduate(Player& player);
 
         // *******************************************************************
