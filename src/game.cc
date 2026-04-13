@@ -41,8 +41,6 @@ namespace main_savitch_14 {
 		display_message("Your move, please: ");
 		getline(cin, move);
 
-		// Case sensitivity is automatically handled
-    	// move[0] = (char)toupper(move[0]);
 		return move;
     }
 
