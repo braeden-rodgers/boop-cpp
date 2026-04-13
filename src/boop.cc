@@ -386,7 +386,7 @@ void Boop::make_move(const string& move) {
         else {
             string ans;
             
-            cout << "You have " << player.get_cats() << " cat piece(s) available. Would you like to use one?" << endl << RESET;
+            cout << MENU << "You have " << player.get_cats() << " cat piece(s) available. Would you like to use one?" << RESET << endl;
             while (true) {
                 cout << "Y/N: ";
                 getline(cin, ans);
