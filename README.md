@@ -61,13 +61,10 @@ boop/
 └── README.md
 ```
 
-<!-- ## Technologies Used
-(WIP) -->
-
 ## Installation & Setup :
 ### Prerequisites
 * C++17 or later
-* CMake (recommended)
+* CMake
 * GCC
 ### Installation
 ```
@@ -114,8 +111,6 @@ WIP
 ## Known Issues/TODO:
 * Implement an AI opponent
 
-<!-- ## License:
-(WIP) -->
-
 ## Acknowledgements:
 * Original *boop.* game designers for the game concept
+* Developers at Ohio Univeristy for the base version of the class Game files
