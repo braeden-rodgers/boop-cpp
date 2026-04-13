@@ -48,10 +48,10 @@ class Cell{
         void set_state(int val) {state = val;}
 
         // Setter method to change the cell's piece
-        void set_piece(std::array<std::string, CELL_HEIGHT> p) {piece = p;}
+        void set_piece(std::array<std::string, CELL_HEIGHT> new_piece) {piece = new_piece;}
 
         // Method to update both data members
-        void update(int val, std::array<std::string, CELL_HEIGHT> p) {state = val; piece = p;}
+        void update(int val, std::array<std::string, CELL_HEIGHT> new_piece) {state = val; piece = new_piece;}
 
     private:
         int state;                                  // Mutable state of the cell:
@@ -116,11 +116,14 @@ class Boop: public main_savitch_14::Game {
         // Method to compute the column index of the selected cell
         int get_col_idx(char col) const {return col - 'A';}
 
-        // Helper method for the booping mechanism to check whether the board indices are in bound
-        bool is_inbounds(int i, int j) const {return i >= 0 && i < SIZE && j >= 0 && j < SIZE;}
+        // Method to check if the current player has all 8 kitten or cat pieces on the board
+        bool has_all_pieces(int state) const;
+
+        // Method to check whether the board indices are in bounds of the board
+        bool is_in_bounds(int i, int j) const {return i >= 0 && i < SIZE && j >= 0 && j < SIZE;}
 
         // Helper method for boop method when a kitten piece boops ONLY its adjacent kitten pieces
-        void boop_kpieces(int i, int j, Cell& src, Cell& dst);
+        void boop_kittens(int i, int j, Cell& src, Cell& dst);
 
         // Helper method for boop method when a cat piece boops ALL its adjacent pieces
         void boop_pieces(int i, int j, Cell& src, Cell& dst);  
@@ -128,8 +131,14 @@ class Boop: public main_savitch_14::Game {
         // Helper method for make_move method to boop the adjacent pieces
         void boop(int i, int j, bool is_cat);
 
+        // Helper method graudate for select_to_graduate to verify the player's selection
+        bool can_graduate(std::string move, Player& player);
+
+        // Helper method for graduate method to let the current player choose a kitten to graduate into a cat
+        void select_to_graduate(Player& player);
+
         // Helper method for make_move method to graduate kitten pieces into cat pieces
-        void graduate();
+        void graduate(Player& player);
 
         // *******************************************************************
         // OVERRIDDEN VIRTUAL METHODS
