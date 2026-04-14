@@ -99,7 +99,57 @@ WIP
 `make test`
 
 ## Screenshots
-WIP
+### Starting the Game
+![Alt text](images/boop_start.png)
+An empty game board will be displayed in the terminal upon executing the program. Each player **always** start the game with **8 active kittens** and must graduate them into cats by **placing 3 kittens in a line** so that either one of them wins the game using cats.
+
+### Placing Kittens
+![Alt text](images/boop_kittens.png)
+Each player places their kittens on the board by **entering their desired column letter (A-F) and then their row number (1-6)**. In this example, player 1 starts the game by placing their first kitten in cell D2, second turn with player 2 placing their first kitten in cell D4, and then player 1 placing their second kitten in cell B2. Note that **the program handles case sensitivity** when it comes to column letters, so the players can enter column letters regardless of it. Additionally, the players **cannot** place their pieces in cells that are occupied, so the game will prompt them to enter their preferred location until they come up with a valid input.
+
+Furthermore, **booping** will occur once a kitten is placed on the board and there are adjacent pieces. Each adjacent piece will move one space away from the placed kitten. However, a kitten **cannot** boop cats nor an adjacent kitten whose next space is already occupied, which is known as **blocking**.
+
+### Placing Cats
+![Alt text](images/boop_cats.png)
+Once you line up 3 pieces on the board, those pieces will be graduated into 3 cats. Whenever you have the opportunity to place a cat on the board, the program will prompt if you would like to place one on the board. 
+
+Cats behave the same way as kittens in terms of booping, however, cats **can** boop other cats.
+
+### Graduation
+![Alt text](images/boop_input_and_graduation.png)
+In order to graduate kittens into cats so that a player can win the game, a player **must** line up 3 kittens in a row. Lining up kittens will result in the 3 kittens turning into cats. Once kittens are graduated, the pieces are removed from the board and no longer usable as 3 cats are pulled into the pool from the reserve. Furthermore, it is possible for a player to line up their pieces that are a mix of kittens and cats. In this example, the cat in the graduation group is put back into the pool while the kittens are graduated into cats.
+
+![Alt text](images/boop_booping_and_graduation_results.png)
+This is the results of player 1 graduating a mix of kittens and cats in cells A3, B2, and C1 (diagonally). Notice how player 1 now has 3 cats added to their pool where the cat on the board was put back into the pool since it is already a cat and the kittens are removed and 2 cats are pulled from the reserve.
+
+### Kitten Selection
+![Alt text](images/boop_kitten_selection.png)
+It is possible for a player to place all their 8 kittens on the board without lining any of them. In this case, the game will prompt the player to select any one of their kittens into a cat. Note that the player **cannot** select one of their opponent's pieces nor an empty space. In this example, player 1 has all 8 kittens on the board and selects their kitten in cell E4.
+
+![Alt text](images/boop_kitten_selection_results.png)
+This is the results of player 1 selecting the kitten to graduate into a cat. The kitten is permanately removed from the game and a cat is put into the active pool from the reserve. Recall that each player **always** has 8 active pieces. After this event, it is the opponent's turn to place their upcoming piece.
+
+### Multiple or Overlapping 3's for Graduation 
+![Alt text](images/boop_multiple_graduations.png)
+Sometimes, you may end up in a situation where there are multiple or overlapping groups of 3 pieces. In this case, the game will display a list of all groups of 3's to graduate into cats and you must input your choice. For example, player 2 has two overlapping groups of 3 pieces to graduate from cells F1 to F4 and is given two options to graduate.
+
+![Alt text](images/boop_multiple_graduations_results.png)
+This is the result of player 2 choosing the second option, meaning that the pieces in cells F2, F3, and F4 are graduated into cats (Cell F4 contains a cat, so kitten graduation is skipped for this particular piece and is placed back into player 2's pool).
+
+
+### Choosing to Graduate a 3-in-a-Row or Select a Kitten
+![Alt text](images/boop_graduate_or_select_kitten.png)
+A **rare case** will occur when a player has all 8 kittens on the board **AND** there are 3 pieces in line. For example, player 1 has all their kittens placed on the board, but there's also a group of 3 pieces to graduate. Therefore, the player is given two option: graduate a 3-in-a-row or select a kitten to graduate into a cat.
+
+![Alt text](images/boop_graduate_or_select_kitten_results.png)
+This is the results of player 1 selecting the first option, which is to graduate their kittens in cells B2, C2, and D2 into cats.
+
+
+### Winning the Game
+![Alt text](images/boop_winning.png)
+A player wins the game by **lining up 3 of their cats** in a **row**, **horizontally**, 
+**vertically**, or **diagonally**. **Alternatively**, a player can win by **having all 8 of their cats on the board**. In this example, the game is over when player 1 has three cats diagonally lined up in cells B3, C4, and D5.
+
 
 ## Concepts & Learning Goals:
 * Object-Oriented Programming (OOP) in C++
@@ -110,6 +160,7 @@ WIP
 
 ## Known Issues/TODO:
 * Implement an AI opponent
+* Develop test cases
 
 ## Acknowledgements:
 * Original *boop.* game designers for the game concept
