@@ -6,8 +6,8 @@
  * 
  */
 
-#ifndef MAIN_SAVITCH_GAME
-#define MAIN_SAVITCH_GAME
+#ifndef MAIN_SAVITCH_GAME_H
+#define MAIN_SAVITCH_GAME_H
 
 #include <queue>    // Provides queue<string>
 #include <string>   // Provides string
@@ -33,7 +33,7 @@ namespace main_savitch_14 {
 
         protected:
             // *******************************************************************
-            // OPTIONAL VIRTUAL METHOD (Overriding is optional)
+            // OPTIONAL VIRTUAL METHODS (Overriding is optional)
             // *******************************************************************
 
             // Virtual method to display a message
@@ -105,4 +105,4 @@ namespace main_savitch_14 {
     };
 };
 
-#endif  // MAIN_SAVITCH_GAME
+#endif  // MAIN_SAVITCH_GAME_H
