@@ -9,7 +9,7 @@
 #include <iostream>     // Provides cin, cout
 #include <queue>        // Provides queue<string>
 #include <string>       // Provides string
-#include <vector>       // Provdies vector<pair<int, int>>
+#include <vector>       // Provdies vector<Graduation> and vector<pair<int, int>>
 #include "boop.h"       // Provides Game class
 #include "colors.h"     // Provides text colors
 
@@ -367,9 +367,9 @@ void Boop::graduate(Player& player) {
 
 void Boop::make_move(const string& move) {
     bool is_cat = false;
-    bool human = next_mover() == HUMAN;
-    int state = human ? 1 : 3;
-    Player& player = human ? p1 : p2;
+    bool is_human = next_mover() == HUMAN;
+    int state = is_human ? 1 : 3;
+    Player& player = is_human ? p1 : p2;
 
     // Get the selected cell of the board to manipulate it
     char row = move.at(1);
@@ -420,7 +420,7 @@ void Boop::make_move(const string& move) {
     Game::make_move(move);
 }
 
-void Boop::restart() {
+void Boop::restart() {            
     // Implement code here
 
     Game::restart();

@@ -15,7 +15,7 @@
 #include <array>    // Provides array<string, N>
 #include <queue>    // Provides queue<string>
 #include <string>   // Provides string
-#include <vector>   // Provides vector<pair<int, int>>
+#include <vector>   // Provides vector<Graduation> and vector<pair<int, int>>
 #include "game.h"   // Provides Game class
 
 // Variables for the game board display
@@ -122,7 +122,7 @@ class Boop: public main_savitch_14::Game {
         // *******************************************************************
         // HELPER METHODS
         // *******************************************************************
-        
+
         // Method to compute the row number of the selected cell
         char get_row(int idx) const {return idx + '1';}
 
