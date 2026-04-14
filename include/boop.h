@@ -162,13 +162,13 @@ class Boop: public main_savitch_14::Game {
         void find_graduations(std::vector<Graduation>& groups);
 
         // Method to verify the player's selection of kitten to graduate
-        bool validate_selection(std::string move, Player& player);
+        bool validate_kselection(std::string move, Player& player);
 
         // Method to let the current player choose a kitten to graduate into a cat
         void select_kitten(Player& player);
 
         // Method to allow the current player to select one group of pieces to graduate
-        Graduation select_graduation(std::vector<Graduation> groups);
+        Graduation select_graduation(const std::vector<Graduation> groups);
 
         // Method to graduate kitten pieces into cat pieces after booping
         void graduate(Player& player);
@@ -188,7 +188,7 @@ class Boop: public main_savitch_14::Game {
         // *******************************************************************
 
         // Derived method that calls the copy constructor to make a copy of the current game
-	    main_savitch_14::Game* clone() const {return new Boop(*this);}
+	    Game* clone() const {return new Boop(*this);}
 
         // Derived method to compute all the moves that the next player can make
 		void compute_moves(std::queue<std::string>& moves) const;

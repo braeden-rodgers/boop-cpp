@@ -133,7 +133,7 @@ void Boop::boop(int i, int j, bool is_cat) {
     }
 }
 
-bool Boop::validate_selection(string move, Player& player) {
+bool Boop::validate_kselection(string move, Player& player) {
     // Verify the length of the move string
     if (move.length() != 2)
         return false;
@@ -170,7 +170,7 @@ void Boop::select_kitten(Player& player) {
     move = get_user_move();
 
     // Verify the selected move before graduating a kitten
-    while (!validate_selection(move, player)) {
+    while (!validate_kselection(move, player)) {
         cout << RED << "Invalid selection." << RESET << endl;
         move = get_user_move();
     }
