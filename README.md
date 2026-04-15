@@ -31,7 +31,7 @@ Once the kittens are graduated into cats, those pieces are then **removed from t
 In a **rare case** of lining up more than three in a row, or multiple connected 3's, **choose which group of 3 to graduate**, leaving the remaining pieces on the board. Likewise, if you have both a three in a row **AND** eight pieces on the board, **choose which you would activate**.
 
 #### Cats
-Once cats are in your active pool, you may choose to play either a cat or kitten on your turn. Cats behave the same way as kittens in all respect, expect that **cats CANNOT be booped by kittens**. However, cats can boop other cats as well as kittens.
+Once cats are in your active pool, you may choose to play either a cat or kitten on your turn. Cats behave the same way as kittens in all respect, expect that cats **CANNOT** be booped by kittens. However, cats **CAN** boop other cats as well as kittens.
 
 When you line up 3 of your pieces with a **combination of cats and kittens**, you still remove all three pieces from the board and graduate any kittens. The cats in the group will go back into the pool, as do any newly graduated cats.
 
