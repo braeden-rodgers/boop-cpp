@@ -15,8 +15,15 @@
 
 using namespace std;
 using namespace main_savitch_14;
+using namespace boop_config;
 
 Boop::Boop() {
+    p1 = p2 = Player();
+
+    for (int i = 0; i < SIZE; i++) 
+        for (int j = 0; j < SIZE; j++)
+            board[i][j] = Cell();
+
     empty.fill(string(CELL_WIDTH, ' '));    // *Crickets*
 
     kitten = {
@@ -36,15 +43,9 @@ Boop::Boop() {
         "   \\____/   ",
         "    ----    "
     };
-
-    for (int i = 0; i < SIZE; i++) 
-        for (int j = 0; j < SIZE; j++)
-            board[i][j] = Cell();
-
-    p1 = p2 = Player();
 }
 
-bool Boop::has_all_pieces(int state) const {
+bool Boop::has_all_pieces(State state) const {
     int pieces = 0;
 
     // Determine whether or not there are all 8 pieces of the same state on the board
@@ -56,76 +57,71 @@ bool Boop::has_all_pieces(int state) const {
     return pieces == 8;
 }
 
-void Boop::boop_kitten(int i, int j, int src_state, Cell& src, Cell& dst) {
+void Boop::boop_kitten(int r, int c, State src_state, Cell& src, Cell& dst) {
     // Check if a KITTEN piece will fall off the game board
-    if (!is_in_bounds(i, j) && src_state % 2 == 1) {
-        src.update(0, empty);
+    if (!is_in_bounds(r, c) && src_state % 2 == 1) {
+        src.set_state(EMPTY);
 
-        if (src_state == 1) 
-            p1.incr_kittens();
-        else if (src_state == 3) 
-            p2.incr_kittens();
+        if (src_state == P1_KITTEN) 
+            p1.kittens++;
+        else if (src_state == P2_KITTEN) 
+            p2.kittens++;
     }
-    else if (dst.get_state() == 0 && src_state % 2 == 1) {
+    else if (dst.get_state() == EMPTY && src_state % 2 == 1) {
         // Move the adjacent kitten piece to the next cell in its direction
-        src.update(0, empty);
-        dst.update(src_state, kitten);
-    }
-    // If neither of the previous statements has been executed, a blocking has occured
-    // as there are two pieces in line with the placed piece
-}
-
-void Boop::boop_piece(int i, int j, int src_state, Cell& src, Cell& dst) {   
-    // Check if ANY piece will fall off the game board
-    if (!is_in_bounds(i, j)) {
-        src.update(0, empty);
-
-        if (src_state == 1) 
-            p1.incr_kittens();
-        else if (src_state == 2) 
-            p1.incr_cats();
-        else if (src_state == 3) 
-            p2.incr_kittens();
-        else if (src_state == 4)
-            p2.incr_cats();
-    }
-    else if (dst.get_state() == 0) {
-        // Move the adjacent piece to the next cell in its direction
-        src.update(0, empty);
+        src.set_state(EMPTY);
         dst.set_state(src_state);
-
-        if (src_state % 2 == 1) 
-            dst.set_piece(kitten);
-        else 
-            dst.set_piece(cat);
     }
     // If neither of the previous statements has been executed, a blocking has occured
     // as there are two pieces in line with the placed piece
 }
 
-void Boop::boop(int i, int j, bool is_cat) {
+void Boop::boop_piece(int r, int c, State src_state, Cell& src, Cell& dst) {   
+    // Check if ANY piece will fall off the game board
+    if (!is_in_bounds(r, c)) {
+        src.set_state(EMPTY);
+
+        if (src_state == P1_KITTEN) 
+            p1.kittens++;
+        else if (src_state == P1_CAT) 
+            p1.cats++;
+        else if (src_state == P2_KITTEN) 
+            p2.kittens++;
+        else if (src_state == P2_CAT)
+            p2.cats++;
+    }
+    else if (dst.get_state() == EMPTY) {
+        // Move the adjacent piece to the next cell in its direction
+        src.set_state(EMPTY);
+        dst.set_state(src_state);
+    }
+    // If neither of the previous statements has been executed, a blocking has occured
+    // as there are two pieces in line with the placed piece
+}
+
+void Boop::boop(int r, int c, State placed_state) {
     // Scan for all valid moves to boop
     for (int k = 0; k < BOOP_DIRS; k++) {
         // Form an index pair of the direction of an adjacent cell from the placed piece in the center cell
-        int r1_idx = i + br_dirs[k];
-        int c1_idx = j + bc_dirs[k];
+        int r1_idx = r + br_dirs[k];
+        int c1_idx = c + bc_dirs[k];
 
         // Check whether or not the index pair is within the bounds of the game board
         if (!is_in_bounds(r1_idx, c1_idx)) 
             continue;
 
         Cell& adjacent = board[r1_idx][c1_idx];
-        int adj_state = adjacent.get_state();
+        State adj_state = adjacent.get_state();
 
         // Check if there is a piece in the adjacent cell
-        if (adj_state != 0) {
+        if (adj_state != EMPTY) {
             // Form an index pair of the cell the booped adjacent piece will move to
             int r2_idx = r1_idx + br_dirs[k];
             int c2_idx = c1_idx + bc_dirs[k];
             Cell& next = board[r2_idx][c2_idx];
 
             // Perform the rest of the booping system depending on the type of the placed piece
-            if (!is_cat)
+            if (placed_state % 2 == 1)
                 boop_kitten(r2_idx, c2_idx, adj_state, adjacent, next);
             else
                 boop_piece(r2_idx, c2_idx, adj_state, adjacent, next);
@@ -133,7 +129,7 @@ void Boop::boop(int i, int j, bool is_cat) {
     }
 }
 
-bool Boop::validate_kselection(string move, Player& player) {
+bool Boop::validate_kselection(const string& move, Player& player) {
     // Verify the length of the move string
     if (move.length() != 2)
         return false;
@@ -147,8 +143,8 @@ bool Boop::validate_kselection(string move, Player& player) {
     if (col < 'A' || col >= 'A' + SIZE) 
         return false;
 
-    int r_idx = get_row_idx(row);
-    int c_idx = get_col_idx(col);
+    int r_idx = char_to_row(row);
+    int c_idx = char_to_col(col);
     bool is_human = (next_mover() == HUMAN) ? true : false;
     Cell& selected = board[r_idx][c_idx];
 
@@ -157,8 +153,8 @@ bool Boop::validate_kselection(string move, Player& player) {
         return false;
 
     // Update the selected cell as an empty cell and graduate its kitten into a cat
-    selected.update(0, empty);
-    player.incr_cats();
+    selected.set_state(EMPTY);
+    player.cats++;
 
     return true;
 }
@@ -176,7 +172,7 @@ void Boop::select_kitten(Player& player) {
     }
 }
 
-Graduation Boop::select_graduation(const vector<Graduation> groups) {
+Graduation Boop::select_graduation(const vector<Graduation>& groups) {
     const int G_SIZE = groups.size();
     int i = 1;
     int choice;
@@ -189,7 +185,7 @@ Graduation Boop::select_graduation(const vector<Graduation> groups) {
         cout << i << ".) ";
         
         for (auto& [i, j] : group.cells) {
-            string cell = string(1, get_col(j)) + string(1, get_row(i));
+            string cell = string(1, col_to_char(j)) + string(1, row_to_char(i));
             cout << cell << " ";
         }
 
@@ -218,17 +214,14 @@ Graduation Boop::select_graduation(const vector<Graduation> groups) {
 }
 
 void Boop::find_graduations(std::vector<Graduation>& groups) {
-    const int PLAYER1 = 0;
-    const int PLAYER2 = 1;
-
     // Search for all possible groups of 3 pieces to graduate
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            int c1_state = (board[i][j]).get_state();
-            int c1_owner = (c1_state > 0 && c1_state <= 2) ? PLAYER1 : PLAYER2;
+            State c1_state = (board[i][j]).get_state();
+            Owner c1_owner = (c1_state > 0 && c1_state <= 2) ? PLAYER1 : PLAYER2;
 
             // Check if the current cell is empty
-            if (c1_state == 0)
+            if (c1_state == EMPTY)
                 continue;
 
             for (int k = 0; k < DIRS; k++) {
@@ -242,26 +235,22 @@ void Boop::find_graduations(std::vector<Graduation>& groups) {
                 if (!is_in_bounds(r2_idx, c2_idx))
                     continue;
                 
-                int c2_state = (board[r1_idx][c1_idx]).get_state();
-                int c3_state = (board[r2_idx][c2_idx]).get_state();
+                State c2_state = (board[r1_idx][c1_idx]).get_state();
+                State c3_state = (board[r2_idx][c2_idx]).get_state();
                 
                 // Check if either of the adjacent cells is empty
-                if (c2_state == 0 || c3_state == 0) 
+                if (c2_state == EMPTY || c3_state == EMPTY) 
                     continue;
 
-                int c2_owner = (c2_state <= 2) ? PLAYER1 : PLAYER2;
-                int c3_owner = (c3_state <= 2) ? PLAYER1 : PLAYER2;
+                Owner c2_owner = (c2_state <= P1_CAT) ? PLAYER1 : PLAYER2;
+                Owner c3_owner = (c3_state <= P1_CAT) ? PLAYER1 : PLAYER2;
 
                 // Check if the pieces share the same owner (All player 1's pieces or all player 2's pieces)
                 if (c1_owner != c2_owner || c1_owner != c3_owner) 
                     continue;
 
                 Graduation group;
-                group.cells = {
-                                {i, j},
-                                {r1_idx, c1_idx},
-                                {r2_idx, c2_idx}
-                            };
+                group.cells = {{i, j}, {r1_idx, c1_idx}, {r2_idx, c2_idx}};
                 group.owner = c1_owner;
 
                 bool is_kitten1 = (c1_state % 2 == 1);
@@ -281,7 +270,7 @@ void Boop::find_graduations(std::vector<Graduation>& groups) {
 
 void Boop::graduate(Player& player) {
     vector<Graduation> groups;
-    int kitten_state = (next_mover() == HUMAN) ? 1 : 3;
+    State kitten_state = (next_mover() == HUMAN) ? P1_KITTEN : P2_KITTEN;
 
     // Scan the game board to find all possible groups of 3 pieces for graduation
     find_graduations(groups);
@@ -343,50 +332,49 @@ void Boop::graduate(Player& player) {
         if (group.is_mixed) {
             // Remove them from the board and graduate the kittens into cats
             for (auto& [i, j] : group.cells) {
-                (board[i][j]).update(0, empty);
+                (board[i][j]).set_state(EMPTY);
 
                 if (group.owner == 0)
-                    p1.incr_cats();
+                    p1.cats++;
                 else
-                    p2.incr_cats();
+                    p2.cats++;
             }
         }
         // Otherwise, graduate all 3 kittens into cats
         else if (group.all_kittens) {
             for (auto& [i, j] : group.cells)
-                (board[i][j]).update(0, empty);
+                (board[i][j]).set_state(EMPTY);
 
             if (group.owner == 0)
-                p1.add_cats(3);
+                p1.cats += 3;
             else
-                p2.add_cats(3);
+                p2.cats += 3;
         }
     }
 }
 
-
 void Boop::make_move(const string& move) {
     bool is_cat = false;
     bool is_human = next_mover() == HUMAN;
-    int state = is_human ? 1 : 3;
+    State state = is_human ? P1_KITTEN : P2_KITTEN;
     Player& player = is_human ? p1 : p2;
 
     // Get the selected cell of the board to manipulate it
     char row = move.at(1);
     char col = (char)toupper(move[0]);
-    int r_idx = get_row_idx(row);
-    int c_idx = get_col_idx(col);
+    int r_idx = char_to_row(row);
+    int c_idx = char_to_col(col);
     Cell& selected = board[r_idx][c_idx];
 
     // Allow the current player to place a cat piece
-    if (player.get_cats() > 0) {
+    if (player.cats > 0) {
         // Automatically set to true if the current player doesn't have kitten pieces from their pool
-        if (player.get_kittens() == 0)
+        if (player.kittens == 0)
             is_cat = true;
         else {
             string ans;
             
-            cout << MENU << "You have " << player.get_cats() << " cat piece(s) available. Would you like to use one?" << RESET << endl;
+            cout << MENU << "You have " << player.cats << " cat piece(s) available. Would you like to use one?" << RESET << endl;
             while (true) {
                 cout << "Y/N: ";
                 getline(cin, ans);
@@ -404,15 +392,17 @@ void Boop::make_move(const string& move) {
 
     // Set the current player's piece on the board
     if (!is_cat) {
-        selected.update(state, kitten);
-        player.decr_kittens();
-    } else {
-        selected.update(state + 1, cat);
-        player.decr_cats();
+        selected.set_state(state);
+        player.kittens--;
+    } 
+    else {
+        state = is_human ? P1_CAT : P2_CAT;
+        player.cats--;
     }
+    selected.set_state(state);
 
     // Boop!
-    boop(r_idx, c_idx, is_cat);
+    boop(r_idx, c_idx, state);
 
     // Perform kitten graduation
     graduate(player);
@@ -473,15 +463,18 @@ void Boop::display_status() const{
             for (int c = 0; c < SIZE; c++) {
                 // Print the piece
                 for (int w = 0; w < CELL_WIDTH; w++) {
-                    int state = (board[r][c]).get_state();
-                    char piece = (board[r][c]).get_piece(h, w);
+                    State state = (board[r][c]).get_state();
 
-                    if (state == 1 || state == 2)
-                        cout << YELLOW << piece << RESET;
-                    else if (state == 3 || state == 4) 
-                        cout << BLUE << piece << RESET;
-                    else
-                        cout << piece;
+                    if (state == P1_KITTEN)
+                        cout << YELLOW << kitten[h][w] << RESET;
+                    else if (state == P1_CAT)
+                        cout << YELLOW << cat[h][w] << RESET;
+                    else if (state == P2_KITTEN)
+                        cout << BLUE << kitten[h][w] << RESET;
+                    else if (state == P2_CAT) 
+                        cout << BLUE << cat[h][w] << RESET;
+                    else 
+                        cout << empty[h][w];
                 }
                 cout << "|";
             }
@@ -503,10 +496,10 @@ void Boop::display_status() const{
     cout << BOLD << YELLOW << "\tPlayer 1's status:" << spacing 
          << BLUE << "Player 2's status:" << RESET << endl;
     cout << string(26, '-') << spacing << string(26, '-') << endl;
-    cout << YELLOW << "\t  " << kpieces_str << " " << RESET << p1.get_kittens()
-         << BLUE << spacing << kpieces_str << " " << RESET << p2.get_kittens() << endl;
-    cout << YELLOW << "\t     " << cpieces_str << " " <<  RESET << p1.get_cats()
-         << BLUE << spacing << cpieces_str << "    " << RESET << p2.get_cats() << endl;
+    cout << YELLOW << "\t  " << kpieces_str << " " << RESET << p1.kittens
+         << BLUE << spacing << kpieces_str << " " << RESET << p2.kittens << endl;
+    cout << YELLOW << "\t     " << cpieces_str << " " <<  RESET << p1.cats
+         << BLUE << spacing << cpieces_str << "    " << RESET << p2.cats << endl;
     cout << endl;
 }
 
@@ -529,7 +522,7 @@ int Boop::evaluate() const {
 }
 
 bool Boop::is_game_over() const {
-    int cat_state = (next_mover() == HUMAN) ? 2 : 4;
+    State cat_state = (next_mover() == HUMAN) ? P1_CAT: P2_CAT;
 
     // Check if the current player wins by having all 8 of their cat pieces on the board at the end of a turn
     if (has_all_pieces(cat_state))
@@ -538,10 +531,10 @@ bool Boop::is_game_over() const {
     // Scan through the entire board to find 3 matching cat pieces in line
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            int c1_state = (board[i][j]).get_state();
+            State c1_state = (board[i][j]).get_state();
 
             // Ignore the current cell if it does not contain a cat piece
-            if (c1_state != 2 && c1_state != 4) 
+            if (c1_state != P1_CAT && c1_state != P2_CAT) 
                 continue;
 
             // Form two index pairs to determine whether there's a line of 3 cat pieces
@@ -555,8 +548,8 @@ bool Boop::is_game_over() const {
                 if (!is_in_bounds(r2_idx, c2_idx)) 
                     continue;
 
-                int c2_state = (board[r1_idx][c1_idx]).get_state();
-                int c3_state = (board[r2_idx][c2_idx]).get_state();
+                State c2_state = (board[r1_idx][c1_idx]).get_state();
+                State c3_state = (board[r2_idx][c2_idx]).get_state();
 
                 // A winning condition is met when all 3 cat pieces in line are matching
                 if (c2_state == c1_state && c3_state == c1_state)
@@ -582,8 +575,8 @@ bool Boop::is_legal(const string& move) const {
     if (col < 'A' || col >= 'A' + SIZE) 
         return false;
 
-    int r_idx = get_row_idx(row);
-    int c_idx = get_col_idx(col);
+    int r_idx = char_to_row(row);
+    int c_idx = char_to_col(col);
 
     // Verify that the selected cell is empty
     if ((board[r_idx][c_idx]).get_state() == 0) 
