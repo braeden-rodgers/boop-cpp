@@ -12,7 +12,7 @@
 #ifndef BOOP_H
 #define BOOP_H
 
-#include <array>    // Provides array<
+#include <array>    // Provides array<int, N> and array <string, N>
 #include <queue>    // Provides queue<string>
 #include <string>   // Provides string
 #include <vector>   // Provides vector<Graduation> and vector<pair<int, int>>
@@ -41,6 +41,7 @@ struct Player {
     int cats = 0;
 };
 
+// Enumeration of owners a piece belongs to
 enum Owner {PLAYER1, PLAYER2};
 
 // A structure for handling unique cases when performing kitten graduation
@@ -67,10 +68,11 @@ class Cell{
         void set_state(State val) {state = val;}
 
     private:
-        State state;    // Value indicating that the cell contains a kitten piece, cat piece, or nothing
+        // Value indicating that the cell contains a kitten piece, cat piece, or nothing
+        State state;
 };
 
-// A derived class of Game class representing an entire round of the "boop." game
+// A class derived from Game class that represents an entire round of the Boop game
 class Boop: public main_savitch_14::Game {
     public:
         // Boop constructor

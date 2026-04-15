@@ -5,7 +5,7 @@
  * 
  */
 
-#include <array>        // Provides array<string, N>
+#include <array>        // Provides array<int, N> and array<string, N>
 #include <iostream>     // Provides cin, cout
 #include <queue>        // Provides queue<string>
 #include <string>       // Provides string
