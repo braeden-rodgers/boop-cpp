@@ -49,7 +49,7 @@ namespace main_savitch_14 {
             virtual int moves_completed() const {return move_num;}
 
             // Virtual method to determine which player is the next mover
-            virtual who next_mover() const{return (move_num % 2 == 0 ? HUMAN : COMPUTER);}
+            virtual who next_mover() const {return (move_num % 2 == 0 ? HUMAN : COMPUTER);}
 
             // Virtual method to determine which player is the opposite of the current player
             virtual who opposite(who player) const {return (player == HUMAN) ? COMPUTER : HUMAN;}
@@ -72,7 +72,7 @@ namespace main_savitch_14 {
             // PURE VIRTUAL METHOD (Must be provided for each derived class)
             // *******************************************************************
 
-            // Pure virtual method that clones
+            // Pure virtual method that calls the copy constructor to make a copy of the current game
             virtual Game* clone() const = 0;
 
             // Pure virtual method to compute all the moves that the next player can make
