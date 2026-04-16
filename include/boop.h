@@ -35,25 +35,26 @@ namespace boop_config {
     constexpr std::array<int, DIRS> c_dirs = {1, 0, 1, -1};
 }
 
+// Enumeration of possible states a single cell in the game board can possess
+enum State {EMPTY, P1_KITTEN, P1_CAT, P2_KITTEN, P2_CAT};
+
+// Enumeration of owners a piece belongs to
+enum Owner {PLAYER1, PLAYER2};
+
 // A structure containing attributes that a single player has in the Boop game
 struct Player {
     int kittens = 8;
     int cats = 0;
 };
 
-// Enumeration of owners a piece belongs to
-enum Owner {PLAYER1, PLAYER2};
-
 // A structure for handling unique cases when performing kitten graduation
 struct Graduation {
     std::vector<std::pair<int, int>> cells; // Vector of cells as pairs of indices within the game board
-    Owner owner;                            // Integer indicating the owner of a piece
+    Owner owner;                            // The owner of a piece
     bool all_kittens;                       // Boolean value if all pieces are kittens
     bool is_mixed;                          // Boolean value if the pieces are a combination of kittens and cats
 };
 
-// Enumeration of possible states a single cell in the game board can possess
-enum State {EMPTY, P1_KITTEN, P1_CAT, P2_KITTEN, P2_CAT};
 
 // A class representing a single cell within the game board
 class Cell{

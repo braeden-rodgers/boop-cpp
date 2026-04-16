@@ -145,11 +145,11 @@ bool Boop::validate_kselection(const string& move, Player& player) {
 
     int r_idx = char_to_row(row);
     int c_idx = char_to_col(col);
-    bool is_human = (next_mover() == HUMAN) ? true : false;
+    bool is_human = next_mover() == HUMAN ? true : false;
     Cell& selected = board[r_idx][c_idx];
 
     // Check if the current player tries to select an invalid cell to graduate a kitten
-    if ((is_human && selected.get_state() != 1) || (!is_human && selected.get_state() != 3))
+    if ((is_human && selected.get_state() != P1_KITTEN) || (!is_human && selected.get_state() != P2_KITTEN))
         return false;
 
     // Update the selected cell as an empty cell and graduate its kitten into a cat
@@ -161,8 +161,9 @@ bool Boop::validate_kselection(const string& move, Player& player) {
 
 void Boop::select_kitten(Player& player) {
     string move;
+    bool is_human = next_mover() == HUMAN;
 
-    cout << MENU << "Select one kitten to graduate into a cat." << RESET << endl;
+    cout << (is_human ? YELLOW : BLUE) << "Select one kitten to graduate into a cat." << RESET << endl;
     move = get_user_move();
 
     // Verify the selected move before graduating a kitten
@@ -173,12 +174,13 @@ void Boop::select_kitten(Player& player) {
 }
 
 Graduation Boop::select_graduation(const vector<Graduation>& groups) {
+    bool is_human = next_mover() == HUMAN;
     const int G_SIZE = groups.size();
     int i = 1;
     int choice;
     string ans;
 
-    cout << MENU << "Select one of the following groups of pieces to graduate into cats:" << RESET << endl;
+    cout << (is_human ? YELLOW : BLUE) << "Select one of the following groups of pieces to graduate into cats:" << RESET << endl;
 
     // Display all options
     for (auto& group : groups) {
@@ -269,8 +271,9 @@ void Boop::find_graduations(std::vector<Graduation>& groups) {
 }
 
 void Boop::graduate(Player& player) {
+    bool is_human = next_mover() == HUMAN;
     vector<Graduation> groups;
-    State kitten_state = (next_mover() == HUMAN) ? P1_KITTEN : P2_KITTEN;
+    State kitten_state = is_human ? P1_KITTEN : P2_KITTEN;
 
     // Scan the game board to find all possible groups of 3 pieces for graduation
     find_graduations(groups);
@@ -286,7 +289,7 @@ void Boop::graduate(Player& player) {
             int choice;
             string ans;
 
-            cout << MENU << "Select one of the following options to activate:" << RESET << endl;
+            cout << (is_human ? YELLOW : BLUE) << "Select one of the following options to activate:" << RESET << endl;
             cout << "1.) Graduate a 3-in-a-row" << endl;
             cout << "2.) Select one kitten on the board to graduate into a cat" << endl << endl;
 
@@ -334,7 +337,7 @@ void Boop::graduate(Player& player) {
             for (auto& [i, j] : group.cells) {
                 (board[i][j]).set_state(EMPTY);
 
-                if (group.owner == 0)
+                if (group.owner == PLAYER1)
                     p1.cats++;
                 else
                     p2.cats++;
@@ -345,7 +348,7 @@ void Boop::graduate(Player& player) {
             for (auto& [i, j] : group.cells)
                 (board[i][j]).set_state(EMPTY);
 
-            if (group.owner == 0)
+            if (group.owner == PLAYER1)
                 p1.cats += 3;
             else
                 p2.cats += 3;
@@ -373,8 +376,8 @@ void Boop::make_move(const string& move) {
             is_cat = true;
         else {
             string ans;
-            
-            cout << MENU << "You have " << player.cats << " cat piece(s) available. Would you like to use one?" << RESET << endl;
+
+            cout << (is_human ? YELLOW : BLUE) << "You have " << player.cats << " cat piece(s) available. Would you like to use one?" << RESET << endl;
             while (true) {
                 cout << "Y/N: ";
                 getline(cin, ans);
@@ -421,14 +424,17 @@ void Boop::compute_moves(queue<string>& moves) const{
 }
 
 void Boop::display_status() const{
-    string eql_str = string(82, '=');
-    string plus_str = string(82, '+');
+    bool is_human = next_mover() == HUMAN;
+    string eql_str(82, '=');
     string spacing = "\t\t\t\t";
     string kpieces_str = "Kitten Pieces:";
     string cpieces_str = "Cat Pieces:";
 
-    cout << endl << eql_str << endl;
-    cout << plus_str << endl;
+    // Display whose turn it is to place their upcoming piece
+    cout << eql_str << endl;
+    cout << string(33, '+') << " ";
+    cout << (is_human ? YELLOW : BLUE) << (is_human ? "Player 1" : "Player 2") << "'s turn" << RESET;    
+    cout << " " << string(32, '+') << endl;
     cout << eql_str << endl << endl;
 
     // Display the entire game board
@@ -579,7 +585,7 @@ bool Boop::is_legal(const string& move) const {
     int c_idx = char_to_col(col);
 
     // Verify that the selected cell is empty
-    if ((board[r_idx][c_idx]).get_state() == 0) 
+    if ((board[r_idx][c_idx]).get_state() == EMPTY) 
         return true;
 
     return false;
