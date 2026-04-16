@@ -164,6 +164,9 @@ A player wins the game by **lining up 3 of their cats** in a **row**, **horizont
 ## Known Issues/TODO
 * Implement an AI opponent
 * Develop test cases
+* Fix issue where a player can place a piece from their empty pool
+* Fix issue where a player has no pieces left in their supply and all of their active pieces are already on the board
+* Fix issue where a player is given options to graduate when there are multiple graduations and they can graduate a group of the opponent's pieces
 
 ## Acknowledgements
 * Original *boop.* game designers for the game concept
